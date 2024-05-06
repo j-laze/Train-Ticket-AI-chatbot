@@ -3,7 +3,8 @@ import pandas as pd
 from itertools import combinations
 
 
-def create_entity_ruler(nlp, station_data):
+
+def create_patterns(station_data):
     name_patterns = []
     longname_patterns = []
     names_station_patterns = []
@@ -18,8 +19,6 @@ def create_entity_ruler(nlp, station_data):
 
         pattern = [{"LOWER": {"FUZZY1": word.lower()}} for word in station_words]
         name_patterns.append({"label": "STATION", "pattern": pattern, "id": station_id})
-
-
 
         long_name = row['longname']
         if pd.notna(long_name):
@@ -37,35 +36,48 @@ def create_entity_ruler(nlp, station_data):
                     names_station = long_name_words[-1:]
                     names_station_pattern = [{"LOWER": word.lower()} for word in names_station]
                     names_station_patterns.append({"label": "STATION", "pattern": names_station_pattern, "id": station_id})
+    return longname_patterns, names_station_patterns, longname_patterns_no_rail_station, name_patterns
 
-
-
-    ruler = nlp.add_pipe("entity_ruler", before="ner",validate=True, config={"overwrite_ents": True})
-    ruler.add_patterns(longname_patterns)
-    ruler.add_patterns(names_station_patterns)
-    ruler.add_patterns(longname_patterns_no_rail_station)
-    ruler.add_patterns(name_patterns)
-   # ruler.add_patterns(pattern3)
-
-def main():
-    # Load the English model
-    nlp = spacy.load('en_core_web_trf')
-    #nlp.add_pipe("merge_entities")
-
+def read_csv_to_df():
     column_names = ["name", "longname", "name_alias", "alpha3", "tiploc"]
 
     # Read the CSV file
     df = pd.read_csv('stations/stations.csv', names=column_names, skiprows=1)
 
-    print(df.head())
-
-    # Define the column names
+    return df
 
 
-    # Read the CSV file
+def create_entity_ruler(nlp,patterns):
+    longname_patterns, names_station_patterns, longname_patterns_no_rail_station, name_patterns = patterns
+    ruler = nlp.add_pipe("entity_ruler", before="ner",validate=True, config={"overwrite_ents": True})
+    ruler.add_patterns(longname_patterns)
+    ruler.add_patterns(names_station_patterns)
+    ruler.add_patterns(longname_patterns_no_rail_station)
+    ruler.add_patterns(name_patterns)
 
-    # Call the function to create the entity ruler
-    create_entity_ruler(nlp, df)
+
+
+def print_named_entities_debug(doc):
+    print("\nNamed Entities:")
+    for ent in doc.ents:
+        print(f"Text: {ent.text}\tStart: {ent.start_char}\tEnd: {ent.end_char}\tLabel: {ent.label_}\tID: {ent.ent_id_}")
+
+    for token in doc:
+        if token.text in ['to', 'from'] and token.i < len(doc) - 1:
+            next_token = doc[token.i + 1]
+            if next_token.ent_type_ == 'STATION':
+                print(f"{token.text.upper()}_STATION: {next_token.text} (ID: {next_token.ent_id_})")
+
+    print("")
+
+def main():
+    nlp = spacy.load('en_core_web_trf')
+
+    station_df = read_csv_to_df()
+
+    patterns = create_patterns(station_df)
+
+    create_entity_ruler(nlp, patterns)
 
     while True:
         user_input = input("Please enter a station name or 'exit' to quit: ").lower()
@@ -76,22 +88,9 @@ def main():
 
         # Process the text
         doc = nlp(user_input)
-        # Process the text
 
+        print_named_entities_debug(doc)
 
-
-        print("\nNamed Entities:")
-        for ent in doc.ents:
-            print(f"Text: {ent.text}\tStart: {ent.start_char}\tEnd: {ent.end_char}\tLabel: {ent.label_}\tID: {ent.ent_id_}")
-
-        for token in doc:
-            if token.text in ['to', 'from'] and token.i < len(doc) - 1:
-                next_token = doc[token.i + 1]
-                if next_token.ent_type_ == 'STATION':
-                    print(f"{token.text.upper()}_STATION: {next_token.text} (ID: {next_token.ent_id_})")
-
-
-        print("")
 
 if __name__ == "__main__":
     main()
