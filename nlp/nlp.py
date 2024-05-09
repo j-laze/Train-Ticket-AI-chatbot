@@ -28,64 +28,109 @@ def create_patterns(station_data):
             # If the long name ends with "rail station", create an additional pattern without these words
             if long_name.lower().endswith("rail station"):
                 short_name_words = long_name_words[:-2]
-                for combination in combinations(short_name_words, len(short_name_words)):   # Remove the last two words ("rail", "station")
+                for combination in combinations(short_name_words,
+                                                len(short_name_words)):  # Remove the last two words ("rail", "station")
                     short_name_pattern = [{"LOWER": word.lower()} for word in short_name_words]
-                    longname_patterns_no_rail_station.append({"label": "STATION", "pattern": short_name_pattern, "id": station_id})
+                    longname_patterns_no_rail_station.append(
+                        {"label": "STATION", "pattern": short_name_pattern, "id": station_id})
                     names_station = long_name_words[-1:]
                     names_station_pattern = [{"LOWER": word.lower()} for word in names_station]
-                    names_station_patterns.append({"label": "STATION", "pattern": names_station_pattern, "id": station_id})
+                    names_station_patterns.append(
+                        {"label": "STATION", "pattern": names_station_pattern, "id": station_id})
     return longname_patterns, names_station_patterns, longname_patterns_no_rail_station, name_patterns
+
 
 def read_csv_to_df():
     column_names = ["name", "longname", "name_alias", "alpha3", "tiploc"]
     # Read the CSV file
-    df = pd.read_csv('../data/stations.csv', names=column_names, skiprows=1)
+    df = pd.read_csv('data/stations.csv', names=column_names, skiprows=1)
 
     return df
 
 
-def create_entity_ruler(nlp,patterns):
+def create_entity_ruler(nlp, patterns):
     longname_patterns, names_station_patterns, longname_patterns_no_rail_station, name_patterns = patterns
-    ruler = nlp.add_pipe("entity_ruler", before="ner",validate=True, config={"overwrite_ents": True})
+    ruler = nlp.add_pipe("entity_ruler", before="ner", validate=True, config={"overwrite_ents": True})
     ruler.add_patterns(longname_patterns)
     ruler.add_patterns(names_station_patterns)
     ruler.add_patterns(longname_patterns_no_rail_station)
     ruler.add_patterns(name_patterns)
 
 
-
-
-
 def recognise_station_directions(doc, user_enquiry):
-    to_station_id = user_enquiry.start_alpha3
-    from_station_id = user_enquiry.end_alpha3
     for token in doc:
         if token.text in ['to', 'from'] and token.i < len(doc) - 1:
             next_token = doc[token.i + 1]
             if next_token.ent_type_ == 'STATION':
                 print(f"Token: {next_token.text}, ID: {next_token.ent_id_}")  # Debug print statement
                 if token.text == 'to':
-                    to_station_id = next_token.ent_id_
+                    user_enquiry.end_alpha3 = next_token.ent_id_
                 elif token.text == 'from':
-                    from_station_id = next_token.ent_id_
-    return to_station_id, from_station_id
+                    user_enquiry.start_alpha3 = next_token.ent_id_
 
-def recognise_times(doc, user_enquiry):
+def recognise_station(doc):
+    station_id = None
+    for token in doc:
+        if token.ent_type_ == 'STATION':
+            station_id = token.ent_id_
+    return station_id
+
+
+def recognise_single_or_return(doc, user_enquiry):
+    for token in doc:
+        print(token.text)
+        if token.text in ['single', 'return']:
+            if token.text == 'single':
+                user_enquiry.journey_type = 'SINGLE'
+            elif token.text == 'return':
+                user_enquiry.journey_type = 'RETURN'
+
+
+def recognise_time_mode(doc, user_enquiry):
     arrive_before_phrases = ['arrive before', 'arrive by', 'arrive at', 'arriving before', 'arriving by', 'arriving at']
     leave_after_phrases = ['leave after', 'leave by', 'leave at', 'leaving after', 'leaving by', 'leaving at']
-    time_value = user_enquiry.time
-    time_action = user_enquiry.depart_or_arrive
+
+    for i in range(len(doc) - 1):  # Iterate over the tokens in the document, excluding the last token
+        phrase = f"{doc[i].text.lower()} {doc[i + 1].text.lower()}"  # Form a phrase with the current token and the next token
+
+        if phrase in arrive_before_phrases:
+            user_enquiry.out_time_condition = 'arrive before'
+        elif phrase in leave_after_phrases:
+            user_enquiry.out_time_condition = 'leave after'
+
+    # Check the last token separately
+    last_token = doc[-1].text.lower()
+    if last_token in arrive_before_phrases:
+        user_enquiry.out_time_condition = 'arrive before'
+    elif last_token in leave_after_phrases:
+        user_enquiry.out_time_condition = 'leave after'
+
+def recognise_times(doc,
+                    user_enquiry):  # TODO: maybe add a return condition, so i know if the time is for the return journey
+    arrive_before_phrases = ['arrive before', 'arrive by', 'arrive at', 'arriving before', 'arriving by', 'arriving at']
+    leave_after_phrases = ['leave after', 'leave by', 'leave at', 'leaving after', 'leaving by', 'leaving at']
+
     for token in doc.ents:
         if token.label_ == 'TIME':
-            time_value = token.text
             # Check the previous two tokens to see if they form a phrase
             if token.start > 1:
                 prev_phrase = doc[token.start - 2:token.start].text.lower()
                 if prev_phrase in arrive_before_phrases:
-                    time_action = 'arrive before'
+                    user_enquiry.out_time_condition = 'arrive before'
                 elif prev_phrase in leave_after_phrases:
-                    time_action = 'leave after'
-    return time_action, time_value
+                    user_enquiry.out_time_condition = 'leave after'
+            user_enquiry.out_time = token.text
+
+
+def recognise_dates(doc, user_enquiry):  # maybe add a return condition, so i know if the date is for the return journey
+    for token in doc.ents:
+        if token.label_ == 'DATE':
+            if user_enquiry.JourneyType == 'SINGLE':
+                user_enquiry.out_date = token.text
+            if user_enquiry.JourneyType == 'RETURN':
+                user_enquiry.ret_date = token.text
+
+
 def print_named_entities_debug(doc):
     print("\nNamed Entities:")
     for ent in doc.ents:

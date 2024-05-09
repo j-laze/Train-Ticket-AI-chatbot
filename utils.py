@@ -51,6 +51,8 @@ class Enquiry:
         self.adults = adults
         self.children = children
         self.railcard = railcard
+    def __str__(self):
+        return f"Enquiry(start_alpha3={self.start_alpha3}, end_alpha3={self.end_alpha3}, journey_type={self.journey_type}, out_time={self.out_time}, ret_time={self.ret_time}, out_date={self.out_date}, ret_date={self.ret_date}, out_time_condition={self.out_time_condition}, ret_time_condition={self.ret_time_condition}, adults={self.adults}, children={self.children}, railcard={self.railcard})"
 
 class Journey:
 

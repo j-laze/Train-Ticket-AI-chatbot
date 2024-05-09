@@ -1,7 +1,7 @@
 import spacy
 
 from nlp.nlp import create_patterns, read_csv_to_df, create_entity_ruler
-from reasoning_engine import ReasoningEngine
+from reasoning_engine import DialogueFlowEngine
 
 
 
@@ -13,7 +13,7 @@ def main():
     station_df = read_csv_to_df()
     patterns = create_patterns(station_df)
     create_entity_ruler(nlp, patterns)
-    engine = ReasoningEngine(nlp, station_df)
+    engine = DialogueFlowEngine(nlp, station_df)
     engine.run()
 
 
