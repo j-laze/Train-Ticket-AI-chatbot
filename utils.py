@@ -8,7 +8,7 @@ class JourneyType(Enum):
 
 class TimeCondition(Enum):
     DEPART_AFTER = 1
-    RETURN_BEFORE = 2
+    ARRIVE_BEFORE = 2
 
 class Railcard(Enum):
     AGE_16_17 = 1
