@@ -126,7 +126,7 @@ def test_splitmyfare_get_search_url():
             continue
         print(f"| EXPECTED URL | {valid_url}")
         print(f"| RESULT URL   | {result_url}")
-        print(f"| TEST RESULT  | {"PASSED" if result_url == valid_url else "FAILED"}")
+        print(f"| TEST RESULT  | {'PASSED' if result_url == valid_url else 'FAILED'}")
         print()
 
 def test_splitmyfare_get_journeys():
@@ -141,7 +141,7 @@ def test_splitmyfare_get_journeys():
         except Exception as e:
             print(e)
             continue
-        print(f"| TEST RESULT  | {"PASSED" if journeys else "FAILED"}")
+        print(f"| TEST RESULT  | {'PASSED' if journeys else 'FAILED'}")
         print()
 
 if __name__ == "__main__":
