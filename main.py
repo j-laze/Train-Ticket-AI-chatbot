@@ -1,6 +1,6 @@
 import spacy
 
-from nlp import create_patterns, read_csv_to_df, create_entity_ruler
+from nlp.nlp import create_patterns, read_csv_to_df, create_entity_ruler
 from reasoning_engine import ReasoningEngine
 
 
