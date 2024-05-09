@@ -12,7 +12,7 @@ class TimeCondition(Enum):
     ON_ARRIVE = 2
 
 
-class Enquirey:
+class Enquiry:
 
     def __init__(
             self,

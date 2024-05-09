@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 from utils import Journey
-from utils import Enquirey
+from utils import Enquiry
 
 
 
