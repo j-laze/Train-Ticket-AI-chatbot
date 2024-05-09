@@ -126,11 +126,14 @@ class DialogueFlowEngine:
 
 
 
-    def completion(self, doc):
-        user_input = "Thank you for providing your journey details, are they correct?"
-        if user_input.lower() == 'yes':
+    def completion(self):
+        user_input = input("Thank you for providing your journey details, are they correct?")
+        if user_input.lower() == 'no':
+            self.user_enquiry = Enquiry()
             self.state = 'ASKING_JOURNEY_DETAILS'
-        print(self.user_enquiry)
+            self.state = self.dialogue_flow[self.state]['next_state']
+        elif user_input.lower() == 'yes':
+            print("completed enquiry: ", self.user_enquiry)
 
 
 
@@ -206,7 +209,7 @@ class DialogueFlowEngine:
     def run(self):
         if self.state == 'ASKING_JOURNEY_DETAILS':
             self.ask_question("Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
-        while self.state != 'COMPLETED':
+        while True:
             if self.state == 'ASKING_START_LOCATION':
                 self.ask_question("Where are you travelling from?")
             elif self.state == 'ASKING_END_LOCATION':
@@ -225,4 +228,7 @@ class DialogueFlowEngine:
                 self.ask_question("How many adult and child tickets would you like ! ")
             elif self.state == 'ASKING_RAILCARD':
                 self.ask_question("Do you have a railcard? ")
+            elif self.state == 'COMPLETED':
+                self.completion()
+
 
