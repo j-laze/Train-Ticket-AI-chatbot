@@ -1,47 +1,52 @@
-# from transformers import GPT2LMHeadModel, GPT2Tokenizer
-#
-#
-# class RuleBasedBot:
-#     def __init__(self):
-#         self.rules = {
-#             "buy a ticket": ["departure station", "destination station", "date"],
-#             # Add more rules as needed
-#         }
-#         self.user_info = {}
-#         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-#         self.model = GPT2LMHeadModel.from_pretrained("gpt2")
-#
-#     def respond(self, user_input):
-#         user_input = user_input.lower()  # Convert the user input to lower case
-#         if user_input in self.rules:
-#             self.user_info[user_input] = []
-#             return self.ask_for_info(user_input)
-#         else:
-#             return self.generate_response(user_input)
-#
-#     def ask_for_info(self, user_input):
-#         for info in self.rules[user_input]:
-#             if info not in self.user_info[user_input]:
-#                 return self.generate_response(f"Could you please provide the {info}?")
-#         return self.generate_response("Thank you for providing all the required information.")
-#
-#     def update_info(self, user_input, info):
-#         if user_input in self.user_info:
-#             self.user_info[user_input].append(info)
-#
-#     def generate_response(self, prompt):
-#         inputs = self.tokenizer.encode(prompt, return_tensors='pt')
-#         outputs = self.model.generate(inputs, max_length=100, temperature=0.7)
-#         response = self.tokenizer.decode(outputs[0])
-#         return response
-#
-#
-# bot = RuleBasedBot()
-#
-# while True:
-#     user_input = input("User: ")
-#     if user_input.lower() == "quit":
-#         break
-#     response = bot.respond(user_input)
-#     print("Bot: ", response)
-# # Outputs: "Could you please provide the destination station?"
+from user_enquiry import Enquiry
+from npl_utils import recognise_station_directions, recognise_times
+import sys
+class ReasoningEngine:
+    def __init__(self, nlp, station_df):
+        self.nlp = nlp
+        self.station_df = station_df
+        self.user_enquiry = Enquiry(None, None, None, None, 1, 0)
+
+    def process_input(self, user_input):
+        doc = self.nlp(user_input)
+        to_station, from_station = recognise_station_directions(doc, self.user_enquiry)
+        time_action, time_value = recognise_times(doc, self.user_enquiry)
+        print(f"From: {from_station}, To: {to_station}, Time: {time_value}, Action: {time_action}")
+        if from_station != "":
+            self.user_enquiry.setStartAlpha3(from_station)
+        if to_station != "":
+            self.user_enquiry.setEndAlpha3(to_station)
+        if time_value != "":
+            self.user_enquiry.setTime(time_value)
+        if time_action != "":
+            self.user_enquiry.setDepartOrArrive(time_action)
+
+
+
+    def ask_question(self, question):
+        user_input = input(question)
+        if user_input.lower() == 'exit':
+            sys.exit()
+        self.process_input(user_input)
+
+    def run(self):
+        questions = [
+            ('time', "Please enter the time of your journey: "),
+            ('depart_or_arrive', "Please specify whether you want to depart or arrive: "),
+            ('start_alpha3', "Please enter the start station: "),
+            ('end_alpha3', "Please enter the end station: "),
+            ('adults', "Please enter the number of adults: "),
+            ('children', "Please enter the number of children: "),
+        ]
+
+        while True:
+            for attr, question in questions:
+                if getattr(self.user_enquiry, attr) in ["", None, 0]:
+                    self.ask_question(question)
+            print(self.user_enquiry)
+            modify = input(
+                "Do you want to modify any details? If yes, please specify the attribute (or type 'no' to continue): ")
+            if modify.lower() == 'no':
+                break
+            elif modify in dict(questions):
+                self.ask_question(dict(questions)[modify])

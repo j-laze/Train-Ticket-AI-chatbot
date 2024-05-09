@@ -2,6 +2,9 @@ import spacy
 import pandas as pd
 from itertools import combinations
 
+from reasoning_engine import ReasoningEngine
+from userClass import Journey
+
 
 
 def create_patterns(station_data):
@@ -40,7 +43,6 @@ def create_patterns(station_data):
 
 def read_csv_to_df():
     column_names = ["name", "longname", "name_alias", "alpha3", "tiploc"]
-
     # Read the CSV file
     df = pd.read_csv('stations/stations.csv', names=column_names, skiprows=1)
 
@@ -57,39 +59,13 @@ def create_entity_ruler(nlp,patterns):
 
 
 
-def print_named_entities_debug(doc):
-    print("\nNamed Entities:")
-    for ent in doc.ents:
-        print(f"Text: {ent.text}\tStart: {ent.start_char}\tEnd: {ent.end_char}\tLabel: {ent.label_}\tID: {ent.ent_id_}")
-
-    for token in doc:
-        if token.text in ['to', 'from'] and token.i < len(doc) - 1:
-            next_token = doc[token.i + 1]
-            if next_token.ent_type_ == 'STATION':
-                print(f"{token.text.upper()}_STATION: {next_token.text} (ID: {next_token.ent_id_})")
-
-    print("")
-
 def main():
     nlp = spacy.load('en_core_web_trf')
-
     station_df = read_csv_to_df()
-
     patterns = create_patterns(station_df)
-
     create_entity_ruler(nlp, patterns)
-
-    while True:
-        user_input = input("Please enter a station name or 'exit' to quit: ").lower()
-
-        # Break the loop if the user enters 'exit'
-        if user_input == 'exit':
-            break
-
-        # Process the text
-        doc = nlp(user_input)
-
-        print_named_entities_debug(doc)
+    engine = ReasoningEngine(nlp, station_df)
+    engine.run()
 
 
 if __name__ == "__main__":
