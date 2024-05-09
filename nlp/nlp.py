@@ -131,6 +131,60 @@ def recognise_dates(doc, user_enquiry):  # maybe add a return condition, so i kn
                 user_enquiry.ret_date = token.text
 
 
+## NOTE: assumes if pm not specified, time is am/24hr
+## TODO: use some regex to handle more cases and make this more robust
+def fmt_natlang_time(input_str):
+
+    input_str = input_str.lower()
+    
+    if any(phrase in input_str for phrase in ["noon", "midday", "mid day"]):
+        return "12:00"
+    if any(phrase in input_str for phrase in ["midnight", "mid night"]):
+        return "00:00"
+
+    digits_str = "".join(c for c in input_str if c.isdigit())
+    digit_count = len(digits_str)
+
+    # if there are 0 or >4 digits, return None
+    if digit_count == 0 or digit_count > 4:
+        return None
+
+    has_pm = "pm" in input_str
+
+    ## if there is only 2 or 1 digits, it is the hour
+    if digit_count <= 2:
+        hour_int = int(digits_str)
+        if has_pm:
+            hour_int += 12
+        if hour_int == 12:
+            hour_int = 0
+        if hour_int < 10:
+            return f"0{hour_int}:00"
+        return f"{hour_int}:00"
+    
+    ## if 3 or more digits but no colon return None
+    if ":" not in input_str:
+        return None
+
+    ## if there are 3 digits, the first is the hour, the last 2 are the minutes
+    if digit_count == 3:
+        hour_int = int(digits_str[0])
+        mins_int = int(digits_str[-2:])
+        mins_str = f"{mins_int}" if mins_int >= 10 else f"0{mins_int}"
+        if has_pm: hour_int += 12
+        if hour_int < 10:
+            return f"0{hour_int}:{mins_str}"
+        return f"{hour_int}:{mins_str}"
+
+    ## if there are 4 digits, the first 2 are the hour, the last 2 are the minutes
+    hour_int = int(digits_str[:2])
+    mins_str = int(digits_str[-2:])
+    if has_pm:
+        hour_int += 12
+    return f"{hour_int}:{mins_str}"
+    
+
+
 def print_named_entities_debug(doc):
     print("\nNamed Entities:")
     for ent in doc.ents:
