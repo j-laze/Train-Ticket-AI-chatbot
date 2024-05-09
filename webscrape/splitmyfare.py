@@ -194,7 +194,7 @@ def get_journeys(enquiry: Enquiry):
         if price_float < cheapest_float:
             cheapest_float = price_float
             cheapest_string = f"Cheapest -> {j_str}"
-    print(url)
+    print(url) 
     print(cheapest_string)
     for num, string in enumerate(print_strings):
         print(f"{num+1} -> {string}")

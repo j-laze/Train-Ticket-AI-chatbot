@@ -25,8 +25,9 @@ valid_enquiry_tuplist_desc_obj_url = [
             out_time            = valid_out_time,
             out_date            = valid_out_date,
             adults              = 1,
+            children            = 0
         ),
-        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate={valid_out_date}T{valid_out_time}"
+        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}"
     ),
     (
         "NRW to LST, single, out-arrive before mid-day tomorrow, 1 adult, 1 child",
@@ -55,8 +56,9 @@ valid_enquiry_tuplist_desc_obj_url = [
             ret_time            = valid_ret_time,
             ret_date            = valid_ret_date,
             adults              = 1,
+            children            = 0,
         ),
-        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}"
+        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}"
     ),
     (
         "NRW to LST, return, out-arrive before mid-day tomorrow, ret-depart after 8pm the day after tomorrow, 1 adult",
@@ -71,8 +73,9 @@ valid_enquiry_tuplist_desc_obj_url = [
             ret_time            = valid_ret_time,
             ret_date            = valid_ret_date,
             adults              = 1,
+            children            = 0,
         ),
-        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1&returnDate={valid_ret_date}T{valid_ret_time}"
+        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1&returnDate={valid_ret_date}T{valid_ret_time}"
     ),
     (
         "NRW to LST, return, out-depart after mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
@@ -87,8 +90,9 @@ valid_enquiry_tuplist_desc_obj_url = [
             ret_time            = valid_ret_time,
             ret_date            = valid_ret_date,
             adults              = 1,
+            children            = 0,
         ),
-        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}&returnBefore=1"
+        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}&returnBefore=1"
     ),
     (
         "NRW to LST, return, out-arrive before mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
@@ -103,8 +107,9 @@ valid_enquiry_tuplist_desc_obj_url = [
             ret_time            = valid_ret_time,
             ret_date            = valid_ret_date,
             adults              = 1,
+            children            = 0,
         ),
-        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1&returnDate={valid_ret_date}T{valid_ret_time}&returnBefore=1"
+        f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1&returnDate={valid_ret_date}T{valid_ret_time}&returnBefore=1"
     ),
 ]
 
@@ -125,10 +130,22 @@ def test_splitmyfare_get_search_url():
         print()
 
 def test_splitmyfare_get_journeys():
-    url = "https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate=2024-05-11T12:00"
-    journeys = splitmyfare.OLD_get_journeys(url)
+    # url = "https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=None&departureDate=2024-05-11T12:00"
+    # journeys = splitmyfare.OLD_get_journeys(url)
+
+    print()
+    for description, enquiry, _ in valid_enquiry_tuplist_desc_obj_url:
+        print(f"| DESCRIPTION  | {description}")
+        try:
+            journeys = splitmyfare.get_journeys(enquiry)
+        except Exception as e:
+            print(e)
+            continue
+        print(f"| TEST RESULT  | {"PASSED" if journeys else "FAILED"}")
+        print()
 
 if __name__ == "__main__":
-    test_splitmyfare_get_search_url()
-    # test_splitmyfare_get_journeys()
+    # test_splitmyfare_get_search_url()
+    test_splitmyfare_get_journeys()
 
+    
