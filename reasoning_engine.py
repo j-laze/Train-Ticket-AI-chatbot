@@ -1,6 +1,8 @@
 from user_enquiry import Enquiry
-from npl_utils import recognise_station_directions, recognise_times
+from nlp import recognise_station_directions, recognise_times
 import sys
+
+
 class ReasoningEngine:
     def __init__(self, nlp, station_df):
         self.nlp = nlp
@@ -20,8 +22,6 @@ class ReasoningEngine:
             self.user_enquiry.setTime(time_value)
         if time_action != "":
             self.user_enquiry.setDepartOrArrive(time_action)
-
-
 
     def ask_question(self, question):
         user_input = input(question)
