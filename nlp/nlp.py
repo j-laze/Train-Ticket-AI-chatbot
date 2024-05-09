@@ -62,7 +62,6 @@ def recognise_station_directions(doc, user_enquiry):
         if token.text in ['to', 'from'] and token.i < len(doc) - 1:
             next_token = doc[token.i + 1]
             if next_token.ent_type_ == 'STATION':
-                print(f"Token: {next_token.text}, ID: {next_token.ent_id_}")  # Debug print statement
                 if token.text == 'to':
                     user_enquiry.end_alpha3 = next_token.ent_id_
                 elif token.text == 'from':
@@ -78,7 +77,6 @@ def recognise_station(doc):
 
 def recognise_single_or_return(doc, user_enquiry):
     for token in doc:
-        print(token.text)
         if token.text in ['single', 'return']:
             if token.text == 'single':
                 user_enquiry.journey_type = 'SINGLE'
@@ -136,4 +134,12 @@ def print_named_entities_debug(doc):
     for ent in doc.ents:
         print(f"Text: {ent.text}\tStart: {ent.start_char}\tEnd: {ent.end_char}\tLabel: {ent.label_}\tID: {ent.ent_id_}")
 
+    print("")
+
+
+def print_time_tokens(doc):
+    print("\nTime Entities:")
+    for ent in doc.ents:
+        if ent.label_ == 'TIME':  # Check if the entity is a time entity
+            print(f"Text: {ent.text}\tStart: {ent.start_char}\tEnd: {ent.end_char}\tLabel: {ent.label_}\tID: {ent.ent_id_}")
     print("")
