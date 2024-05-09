@@ -1,6 +1,8 @@
 import pandas as pd
 from itertools import combinations
 
+from utils import JourneyType, TimeCondition
+
 
 def create_patterns(station_data):
     name_patterns = []
@@ -79,9 +81,9 @@ def recognise_single_or_return(doc, user_enquiry):
     for token in doc:
         if token.text in ['single', 'return']:
             if token.text == 'single':
-                user_enquiry.journey_type = 'SINGLE'
+                user_enquiry.journey_type = JourneyType.SINGLE
             elif token.text == 'return':
-                user_enquiry.journey_type = 'RETURN'
+                user_enquiry.journey_type = JourneyType.RETURN
 
 
 def recognise_time_mode(doc, user_enquiry):
@@ -92,16 +94,16 @@ def recognise_time_mode(doc, user_enquiry):
         phrase = f"{doc[i].text.lower()} {doc[i + 1].text.lower()}"  # Form a phrase with the current token and the next token
 
         if phrase in arrive_before_phrases:
-            user_enquiry.out_time_condition = 'arrive before'
+            user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
         elif phrase in leave_after_phrases:
-            user_enquiry.out_time_condition = 'leave after'
+            user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
 
     # Check the last token separately
     last_token = doc[-1].text.lower()
     if last_token in arrive_before_phrases:
-        user_enquiry.out_time_condition = 'arrive before'
+        user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
     elif last_token in leave_after_phrases:
-        user_enquiry.out_time_condition = 'leave after'
+        user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
 
 def recognise_times(doc,
                     user_enquiry):  # TODO: maybe add a return condition, so i know if the time is for the return journey

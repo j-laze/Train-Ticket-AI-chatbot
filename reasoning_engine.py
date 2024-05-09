@@ -43,7 +43,7 @@ class DialogueFlowEngine:
             },
 
             'ASKING_PASSENGERS': {
-                'method': self.handle_journey_details,
+                'method': self.handle_passengers,
                 'check': self.passengers_check,
                 'next_state': 'COMPLETED'
             },
@@ -98,8 +98,8 @@ class DialogueFlowEngine:
         recognise_times(doc, self.user_enquiry)
         self.state = self.dialogue_flow[self.state]['next_state']
 
-    def out_date_time_check(self):
-        return self.user_enquiry.out_date and self.user_enquiry.out_time
+    def out_date_time_check(self):    # check
+        return self.user_enquiry.out_date or self.user_enquiry.out_time
 
     def handle_out_time_constraint(self, doc):
         recognise_time_mode(doc, self.user_enquiry)
@@ -111,9 +111,11 @@ class DialogueFlowEngine:
 
     def handle_passengers(self, doc):
         for i in range(1, len(doc)):
-            if doc[i].text in ['adults', 'children'] and doc[i - 1].ent_type_ == 'CARDINAL':
+            if doc[i].text in ['adults', 'children', 'adult'] and doc[i - 1].ent_type_ == 'CARDINAL':
                 count = int(doc[i - 1].text)
                 if doc[i].text == 'adults':
+                    self.user_enquiry.adults = count
+                if doc[i].text == 'adult':
                     self.user_enquiry.adults = count
                 elif doc[i].text == 'children':
                     self.user_enquiry.children = count
@@ -123,9 +125,13 @@ class DialogueFlowEngine:
         return self.user_enquiry.adults or self.user_enquiry.children
 
 
+
     def completion(self, doc):
-        print("Thank you for providing your journey details.")
+        user_input = "Thank you for providing your journey details, are they correct?"
+        if user_input.lower() == 'yes':
+            self.state = 'ASKING_JOURNEY_DETAILS'
         print(self.user_enquiry)
+
 
 
 
@@ -199,24 +205,24 @@ class DialogueFlowEngine:
 
     def run(self):
         if self.state == 'ASKING_JOURNEY_DETAILS':
-            self.ask_question("What journey details would you like to provide? ")
+            self.ask_question("Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
         while self.state != 'COMPLETED':
             if self.state == 'ASKING_START_LOCATION':
-                self.ask_question("What's your starting location? ")
+                self.ask_question("Where are you travelling from?")
             elif self.state == 'ASKING_END_LOCATION':
-                self.ask_question("What's your end location? ")
+                self.ask_question("Where are you travelling to?")
             elif self.state == 'ASKING_JOURNEY_TYPE':
-                self.ask_question("Is this a single or return journey? ")
+                self.ask_question("Are you looking for a single or return ticket? ")
             elif self.state == 'ASKING_OUTGOING_TIME_CONSTRAINT':
-                self.ask_question("Do you want to depart at or arrive by a certain time for your outgoing journey? ")
+                self.ask_question("Do you want to leave at a certain time or arrive by a certain time to your destination?  ")
             elif self.state == 'ASKING_OUTGOING_DATE_TIME':
-                self.ask_question("What's your outgoing date and time? ")
+                self.ask_question("What time would you like to travel at ? ")
             elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
                 self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
             elif self.state == 'ASKING_RETURN_DATE_TIME':
                 self.ask_question("What's your return date and time? ")
             elif self.state == 'ASKING_PASSENGERS':
-                self.ask_question("How many adults and children are there? ")
+                self.ask_question("How many adult and child tickets would you like ! ")
             elif self.state == 'ASKING_RAILCARD':
                 self.ask_question("Do you have a railcard? ")
 
