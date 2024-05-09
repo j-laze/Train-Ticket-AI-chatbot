@@ -9,11 +9,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from utils import *
+from utils import JourneyType, TimeCondition, Railcard
+from utils import Enquiry, Journey
 
 
 
-def get_search_url(enquiry: Enquiry):
+def get_search_url(enquiry: Enquiry) -> str:
 
     ## get the raw text from the link
     station_code_js_url = "https://book.splitmyfare.co.uk/static/js/57.80112f8e.chunk.js"
@@ -72,12 +73,11 @@ def get_search_url(enquiry: Enquiry):
 
 
 
-
 def OLD_get_journeys(url):
 
-    something_wrong_xpath = "//*[@id=\"root\"]/div[2]/div/div[2]/div/div/div[2]/a/button"
-    search_again_xpath = "//*[@id=\"root\"]/div/div/div/div[2]/button"
-    outbound_container_div_xpath = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
+    something_wrong_xpath           = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
+    search_again_xpath              = "/html/body/div[1]/div[1]/div/div/div[2]/button"
+    outbound_container_div_xpath    = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
 
     driver = webdriver.Chrome()
 
@@ -116,3 +116,8 @@ def OLD_get_journeys(url):
 
         print(f"{depart_time_str}-{arrive_time_str}, £{price_str}")
         i+=1
+
+
+def get_journeys(enquiry: Enquiry, url: str) -> str:
+
+    pass
