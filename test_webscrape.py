@@ -1,14 +1,22 @@
-from utils import *
+import datetime
 
+from utils import *
 import webscrape.splitmyfare as splitmyfare
 
+# tomorrow = (datetime.date.today() + datetime.timedelta(days=1))
+# tomorrow_date_string = tomorrow.strftime("%Y-%m-%d")
+# print(tomorrow_date_string)
+# exit()
+
+tomorrow = (datetime.date.today() + datetime.timedelta(days=1))
 
 valid_start_alpha3  = "NRW"
 valid_end_alpha3    = "LST"
 valid_out_time      = "12:00"
-valid_out_date      = "2024-05-11"
+valid_out_date      = tomorrow.strftime("%Y-%m-%d")
 valid_ret_time      = "20:00"
-valid_ret_date      = "2024-05-12"
+valid_ret_date      = (tomorrow + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+
 
 valid_enquiry_strings_objects = [
     (
@@ -100,7 +108,7 @@ valid_enquiry_strings_objects = [
 
 
 
-def test_splitmyfare_url():
+def test_splitmyfare_get_search_url():
 
     print()
     for enquiry_string, enquiry_object in valid_enquiry_strings_objects:
@@ -112,12 +120,9 @@ def test_splitmyfare_url():
             continue
         print(url)
         print()
-        
-
-
-    # journeys = splitmyfare.get_journeys(enquiry)
 
 
 
 if __name__ == "__main__":
-    test_splitmyfare_url()
+    test_splitmyfare_get_search_url()
+
