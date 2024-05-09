@@ -2,8 +2,6 @@ import requests
 import re
 import json
 import pandas as pd
-import datetime
-import os
 import time
 
 from selenium import webdriver
@@ -11,62 +9,85 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
-from utils import Journey
-
-
-station_json_url = "https://book.splitmyfare.co.uk/static/js/57.80112f8e.chunk.js"
+from utils import JourneyType, TimeCondition, Railcard
+from utils import Enquiry, Journey
 
 
 
-
-## TODO: use enquirey object to get the search link
-def get_search_link(from_alpha3, to_alpha3, departure, adults=1, children=0):
+def get_search_url(enquiry: Enquiry) -> str:
 
     ## get the raw text from the link
-    response = requests.get(station_json_url)
-    raw_text = response.text
+    station_code_js_url = "https://book.splitmyfare.co.uk/static/js/57.80112f8e.chunk.js"
+    station_code_js = requests.get(station_code_js_url)
 
-    # Extract the string passed to JSON.parse
-    match = re.search(r"JSON\.parse\('(.*)'\)", raw_text, re.DOTALL)
-    if match:
+    ## verify the station_js request was successful
+    if station_code_js.status_code != 200:
+        raise Exception(f"Unable to create splitmyfare search url, request for any station information failed")
 
-        ## extract and parse the JSON string 
-        json_string = match.group(1)
-        json_string = json_string.replace("\\", "\\\\") # Replace single backslashes with double backslashes
-        data = json.loads(json_string)
+    ## extract the string passed to JSON.parse
+    match = re.search(r"JSON\.parse\('(.*)'\)", station_code_js.text, re.DOTALL)
 
-        ## create a dictionary mapping alpha3 to unique code
-        alpha3_to_uic = {}
-        for entry in data:
-            if 'crs' in entry and 'uic' in entry and entry['uic'] != '':
-                alpha3_to_uic[entry['crs']] = entry['uic']
+    ## verify the JSON.parse string was found
+    if match is None:
+        raise Exception("Unable to create splitmyfare search url, could not find any splitmyfare station information")
 
-        ## get the unique code for the start and end stations
-        from_uic = alpha3_to_uic[from_alpha3]
-        to_uic = alpha3_to_uic[to_alpha3]
+    ## extract and clean the JSON string 
+    station_json_str = match.group(1)
+    station_json_str = station_json_str.replace("\\", "\\\\")
 
-        ## create and return the search link
-        if from_uic and to_uic:
-            return f"https://book.splitmyfare.co.uk/search?from={from_uic}&to={to_uic}&adults={adults}&children={children}&departureDate={departure.strftime('%Y-%m-%d')}T{departure.strftime('%H:%M')}"
-        return None
+    ## parse the JSON string
+    station_json = json.loads(station_json_str)
+
+    ## create a dictionary mapping alpha3 to unique code
+    alpha3_to_uic = {}
+    for entry in station_json:
+        if 'crs' in entry and 'uic' in entry and entry['uic'] != '':
+            alpha3_to_uic[entry['crs']] = entry['uic']
+
+    ## get the unique code for the start and end stations
+    from_uic = alpha3_to_uic[enquiry.start_alpha3]
+    to_uic = alpha3_to_uic[enquiry.end_alpha3]
+
+    ## verify the given stations are actually in the JSON
+    if from_uic is None:
+        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enquiry.start_alpha3}")
+    if to_uic is None:
+        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enquiry.end_alpha3}")
+    
+    ## populate url with universally required ticket information
+    url = "https://book.splitmyfare.co.uk/search"                   ## base url
+    url += f"?from={from_uic}&to={to_uic}"                          ## add the start and end stations
+    url += f"&adults={enquiry.adults}&children={enquiry.children}"  ## add the number of adults and children
+    url += f"&departureDate={enquiry.out_date}T{enquiry.out_time}"  ## add the departure date and time
+
+    ## populate url with optional ticket information
+    ## TODO: if specified, apply railcard information to url here
+    if enquiry.out_time_condition == TimeCondition.ARRIVE_BEFORE:       ## if out time condition is on arrival, add to url
+        url += "&departureBefore=1"
+    if enquiry.journey_type == JourneyType.RETURN:                  ## if return journey, add return date and time to url
+        url += f"&returnDate={enquiry.ret_date}T{enquiry.ret_time}"
+        if enquiry.ret_time_condition == TimeCondition.ARRIVE_BEFORE:   ## if return time condition is on arrival, add to url
+            url += "&returnBefore=1"
+
+    return url
 
 
-def get_journeys(url):
 
-    something_wrong_xpath = "//*[@id=\"root\"]/div[2]/div/div[2]/div/div/div[2]/a/button"
-    search_again_xpath = "//*[@id=\"root\"]/div/div/div/div[2]/button"
-    outbound_container_div_xpath = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
+def OLD_get_journeys(url):
+
+    something_wrong_xpath           = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
+    search_again_xpath              = "/html/body/div[1]/div[1]/div/div/div[2]/button"
+    outbound_container_div_xpath    = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
 
     driver = webdriver.Chrome()
 
     driver.get(url)
 
-    ## you must be a bot... click the button and prove you're not!
+    ## you must be a bot... click the button to prove you're not!
     button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, something_wrong_xpath)))
     button.click()
 
-    ## reapply the search
+    ## reapply the search, because you're not a bot!
     button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, search_again_xpath)))
     button.click()
 
@@ -78,7 +99,7 @@ def get_journeys(url):
         price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
 
         try:
-            WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
         except:
             break
 
@@ -96,24 +117,7 @@ def get_journeys(url):
         print(f"{depart_time_str}-{arrive_time_str}, £{price_str}")
         i+=1
 
-    # outbound_0_xpath = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]/div[2]"
-    # outbound_0 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, outbound_0_xpath)))
-    # time_span_0 = outbound_0.find_element(By.TAG_NAME, "span")
-    # print(time_span_0.text)
 
+def get_journeys(enquiry: Enquiry, url: str) -> str:
 
-
-
-
-    
-
-
-
-
-
-# url = get_search_link("NRW", "LST", (datetime.datetime.now() + datetime.timedelta(days=1)) .replace (hour=9, minute=0, second=0, microsecond=0))
-url = "https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate=2024-05-08T09:00"
-print(url)
-print()
-journeys = get_journeys(url)
-
+    pass
