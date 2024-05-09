@@ -1,7 +1,9 @@
 from utils import Enquiry
 from nlp.nlp import recognise_station_directions, recognise_times, recognise_dates, recognise_station, \
-    print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens
+    print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens, fmt_natlang_time
 import sys
+
+from webscrape.splitmyfare import get_search_url
 
 
 class DialogueFlowEngine:
@@ -134,6 +136,10 @@ class DialogueFlowEngine:
             self.state = self.dialogue_flow[self.state]['next_state']
         elif user_input.lower() == 'yes':
             print("completed enquiry: ", self.user_enquiry)
+            self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
+            print(self.user_enquiry.out_time)
+            url = get_search_url(self.user_enquiry)
+            print(url)
 
 
 
