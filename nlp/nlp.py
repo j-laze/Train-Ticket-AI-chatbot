@@ -39,7 +39,7 @@ def create_patterns(station_data):
 def read_csv_to_df():
     column_names = ["name", "longname", "name_alias", "alpha3", "tiploc"]
     # Read the CSV file
-    df = pd.read_csv('stations/stations.csv', names=column_names, skiprows=1)
+    df = pd.read_csv('../data/stations.csv', names=column_names, skiprows=1)
 
     return df
 

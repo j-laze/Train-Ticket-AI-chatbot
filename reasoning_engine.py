@@ -1,5 +1,5 @@
 from user_enquiry import Enquiry
-from nlp import recognise_station_directions, recognise_times
+from nlp.nlp import recognise_station_directions, recognise_times
 import sys
 
 
