@@ -64,7 +64,7 @@ def get_search_url(enquiry: Enquiry) -> str:
     ## TODO: if specified, apply railcard information to url here
     if enquiry.out_time_condition == TimeCondition.ARRIVE_BEFORE:       ## if out time condition is on arrival, add to url
         url += "&departureBefore=1"
-    if enquiry.journey_type == JourneyType.RETURN:                  ## if return journey, add return date and time to url
+    if enquiry.journey_type == JourneyType.RETURN:                      ## if return journey, add return date and time to url
         url += f"&returnDate={enquiry.ret_date}T{enquiry.ret_time}"
         if enquiry.ret_time_condition == TimeCondition.ARRIVE_BEFORE:   ## if return time condition is on arrival, add to url
             url += "&returnBefore=1"
@@ -118,6 +118,85 @@ def OLD_get_journeys(url):
         i+=1
 
 
-def get_journeys(enquiry: Enquiry, url: str) -> str:
+def get_journeys(enquiry: Enquiry):
 
-    pass
+    something_wrong_xpath           = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
+    search_again_xpath              = "/html/body/div[1]/div[1]/div/div/div[2]/button"
+    outbound_container_div_xpath    = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
+    # return_container_div_xpath      = "" ## TODO: add return container div xpath
+
+    ## create driver, navigate to url deciphered from enquiry
+    driver = webdriver.Chrome()
+    url = get_search_url(enquiry)
+    driver.get(url)
+
+    ## you must be a bot... click the button to prove you're not!
+    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, something_wrong_xpath)))
+    button.click()
+
+    ## reapply the search, because you're not a bot!
+    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, search_again_xpath)))
+    button.click()
+
+    price_journey_tuplist = []
+
+    ## outbound journeys
+    i = 0
+    while True:
+        container_div_xpath = f"{outbound_container_div_xpath}/div[{i+2}]"
+        time_span_xpath = f"{container_div_xpath}/div[1]/div[2]/div/span"
+        price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
+
+        ## break if no more journeys found
+        try: WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
+        except: break
+
+        ## get departure and arrival times using substring of time span element text
+        # NOTE: first and last 5 characters of text are departure and arrival times respectively
+        time_span = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, time_span_xpath)))
+        depart_time_str = time_span.text[:5]
+        arrive_time_str = time_span.text[-5:]
+
+        ## get the price from the price container div using regex on the innerHTML of the price container div
+        # NOTE: uses innerHTML because the cheapest price has another div inside the price container div
+        price_container_div = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, price_container_div_xpath)))
+        price_str = re.search(r"£(\d+\.\d{2})", price_container_div.get_attribute("innerHTML")).group(1)
+
+        ## add price and journey to list
+        price_journey_tuplist.append(
+            (
+                price_str,
+                Journey (
+                    start_alpha3 = enquiry.start_alpha3,
+                    end_alpha3 = enquiry.end_alpha3,
+                    journey_type = enquiry.journey_type,
+                    out_depart_time = depart_time_str,
+                    out_arrive_time = arrive_time_str,
+                )
+            )
+        )
+
+        i+=1
+
+
+    if not price_journey_tuplist:
+        print("No journeys found")
+
+    cheapest_float = 99999
+    cheapest_string = ""
+    print_strings = []
+    for _, (price_str, journey) in enumerate(price_journey_tuplist):
+        j_str = f"£{price_str}, {journey.out_depart_time}-{journey.out_arrive_time}"
+        if enquiry.journey_type == JourneyType.RETURN:
+            j_str += f", {journey.ret_depart_time}-{journey.ret_arrive_time}"
+        print_strings.append(j_str)
+        price_float = float(re.sub(r"[^0-9.]", "", price_str))
+        if price_float < cheapest_float:
+            cheapest_float = price_float
+            cheapest_string = f"Cheapest -> {j_str}"
+    print(url)
+    print(cheapest_string)
+    for num, string in enumerate(print_strings):
+        print(f"{num+1} -> {string}")
+
+    return price_journey_tuplist[:i]

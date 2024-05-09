@@ -3,7 +3,9 @@ from nlp.nlp import recognise_station_directions, recognise_times, recognise_dat
     print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens, fmt_natlang_time
 import sys
 
-from webscrape.splitmyfare import get_search_url
+from webscrape.splitmyfare import get_journeys
+from utils import JourneyType, TimeCondition, Railcard
+from utils import Enquiry, Journey
 
 
 class DialogueFlowEngine:
@@ -135,11 +137,32 @@ class DialogueFlowEngine:
             self.state = 'ASKING_JOURNEY_DETAILS'
             self.state = self.dialogue_flow[self.state]['next_state']
         elif user_input.lower() == 'yes':
-            print("completed enquiry: ", self.user_enquiry)
-            self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
-            print(self.user_enquiry.out_time)
-            url = get_search_url(self.user_enquiry)
-            print(url)
+            # print("completed enquiry: ", self.user_enquiry)
+            # self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
+            # print(self.user_enquiry.out_time)
+            # url = get_search_url(self.user_enquiry)
+            # print(url)
+
+            # ## TODO: post demo, uncomment above and remove below
+
+            print("FOLLOWING DEFAULTS FOR DEMO: ")
+            print("| journey_type = JourneyType:SINGLE")
+            print("| out_time_condition = TimeCondition.DEPART_AFTER")
+            print("| out_date = 2024-05-10")
+            print("| children = 0")
+
+            demo_enquiry = Enquiry(
+                start_alpha3        = self.user_enquiry.start_alpha3,
+                end_alpha3          = self.user_enquiry.end_alpha3,
+                journey_type        = JourneyType.SINGLE,
+                out_time_condition  = TimeCondition.DEPART_AFTER,
+                out_time            = fmt_natlang_time(self.user_enquiry.out_time),
+                out_date            = "2024-05-10",
+                adults              = self.user_enquiry.adults,
+                children            = 0,
+            )
+
+            priced_journeys = get_journeys(demo_enquiry)
 
 
 
