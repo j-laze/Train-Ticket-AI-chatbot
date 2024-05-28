@@ -1,2 +1,5 @@
 **/__pycache__/
-.vscode/
+**/.vscode/
+_LaTex_/*
+!_LaTex_/*.tex
+!_LaTex_/*.bib
