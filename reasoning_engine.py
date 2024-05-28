@@ -145,11 +145,13 @@ class DialogueFlowEngine:
 
             # ## TODO: post demo, uncomment above and remove below
 
+            print()
             print("FOLLOWING DEFAULTS FOR DEMO: ")
             print("| journey_type = JourneyType:SINGLE")
             print("| out_time_condition = TimeCondition.DEPART_AFTER")
             print("| out_date = 2024-05-10")
-            print("| children = 0")
+            # print("| children = 0")
+            print()
 
             demo_enquiry = Enquiry(
                 start_alpha3        = self.user_enquiry.start_alpha3,
@@ -159,7 +161,7 @@ class DialogueFlowEngine:
                 out_time            = fmt_natlang_time(self.user_enquiry.out_time),
                 out_date            = "2024-05-10",
                 adults              = self.user_enquiry.adults,
-                children            = 0,
+                children            = 0 if self.user_enquiry.children is None else self.user_enquiry.children,
             )
 
             priced_journeys = get_journeys(demo_enquiry)
@@ -232,6 +234,7 @@ class DialogueFlowEngine:
             sys.exit()
         self.process_input(user_input)
         print(self.user_enquiry)
+        print()
 
 
 
