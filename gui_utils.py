@@ -1,5 +1,6 @@
-import customtkinter as ctk
-from collections import namedtuple
+# import customtkinter as ctk
+from customtkinter import *
+from tkinter import Listbox
 
 
 
@@ -76,3 +77,38 @@ def append_converse(question, data, listbox):
                 derived_str += f", {d}"
         listbox.insert("end", derived_str)
     listbox.insert("end", "")
+
+################################|###############################
+#############################CLASSES############################
+################################|###############################
+
+class Tab(CTkFrame):
+
+    def __init__(self, master, title, **kwargs):
+        super().__init__(master=master, **kwargs)
+        
+        self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
+        
+        self.title = CTkLabel(master=self, text=title, font=TITLE_FONT)
+        self.title.pack(pady=PADY/2)
+        
+        self.conversation = Listbox(master=self, selectmode=None, width=LISTBOX_WIDTH_CHARS, height=LISTBOX_HEIGHT_CHARS)
+        self.conversation.pack(padx=PADX, pady=PADY)
+        self.conversation.bind("<Button-1>", lambda event: "break")
+        self.conversation.bind("<Key>", lambda event: "break")
+        
+        self.entry = CTkEntry(master=self, placeholder_text="...")
+        self.entry.pack(padx=PADX, pady=PADY)
+
+class TabView(CTkTabview):
+
+    def __init__(self, master, **kwargs):
+        super().__init__(master=master, **kwargs)
+        
+        self.pack()
+        
+        self.search_tab = self.add(TAB_NAMES[0])
+        self.delay_tab = self.add(TAB_NAMES[1])
+        
+        self.search_content = Tab(master=self.search_tab, title="Search for Tickets")
+        self.delay_content = Tab(master=self.delay_tab, title="Delay Tickets")
