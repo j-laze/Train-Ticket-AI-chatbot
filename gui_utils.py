@@ -82,9 +82,11 @@ def append_converse(question, data, listbox):
 #############################CLASSES############################
 ################################|###############################
 
+
 class Tab(CTkFrame):
 
     def __init__(self, master, title, **kwargs):
+
         super().__init__(master=master, **kwargs)
         
         self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
@@ -100,15 +102,32 @@ class Tab(CTkFrame):
         self.entry = CTkEntry(master=self, placeholder_text="...")
         self.entry.pack(padx=PADX, pady=PADY)
 
+
 class TabView(CTkTabview):
 
     def __init__(self, master, **kwargs):
+        
         super().__init__(master=master, **kwargs)
         
         self.pack()
         
         self.search_tab = self.add(TAB_NAMES[0])
         self.delay_tab = self.add(TAB_NAMES[1])
+
+
+class Gui(CTk):
+    
+    def __init__(self):
+
+        set_appearance_mode(APPEARANCE_MODE)
+        set_default_color_theme(COLOUR_THEME)
         
-        self.search_content = Tab(master=self.search_tab, title="Search for Tickets")
-        self.delay_content = Tab(master=self.delay_tab, title="Delay Tickets")
+        super().__init__()
+
+        self.geometry(APP_GEOMETRY)
+        self.title(APP_NAME)
+        
+        self.tabview = TabView(master=self)
+        self.search_gui = Tab(master=self.tabview.search_tab, title="Search for Tickets")
+        self.delay_gui = Tab(master=self.tabview.delay_tab, title="Delay Tickets")
+        
