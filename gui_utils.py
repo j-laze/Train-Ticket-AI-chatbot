@@ -3,7 +3,6 @@ from customtkinter import *
 from tkinter import Listbox
 
 
-
 ################################|###############################
 ############################CONSTANTS###########################
 ################################|###############################
@@ -24,14 +23,12 @@ APP_NAME = "Tinker Trian"
 
 ## TABVIEW:
 
-TAB_NAMES = [ "Ticket Search", "Delay Info" ]
+TAB_NAMES = [ "Find Best Tickets", "Delay Information" ]
 
 ## FRAME:
 
 FRAME_FILL = "both"
 FRAME_EXPAND = True
-FRAME_PADX = 4*PADX
-FRAME_PADY = 4*PADX
 
 ## TITLES:
 
@@ -39,90 +36,81 @@ TITLE_FONT = ("Arial", 20)
 TITLE_PADX = 10
 TITLE_PADY = 20
 
-## PROMPTS:
+## CONVERSATION:
 
-LISTBOX_WIDTH_CHARS  = 50
-LISTBOX_HEIGHT_CHARS = 15
+CONVO_WIDTH  = 400
+CONVO_HEIGHT = 400
+MSG_FONT = ("Arial", 12)
+BOT_MSG_COLOR = "lightblue"
+USR_MSG_COLOR = "lightgreen"
 
-TEST_PROMPT_DATA = [
-    ( "prompty_prompt_01", [ "data", "atad" ] ),
-    ( "prompty_prompt_02", [ "data", "atad" ] ),
-    ( "prompty_prompt_03", [ "data", "atad" ] ),
-    ( "prompty_prompt_04", [ "data", "atad" ] ),
-    ( "prompty_prompt_05", [ "data", "atad" ] ),
-    ( "prompty_prompt_06", [ "data", "atad" ] ),
-    ( "prompty_prompt_07", [ "data", "atad" ] ),
-    ( "prompty_prompt_08", [ "data", "atad" ] ),
-    ( "prompty_prompt_09", [ "data", "atad" ] ),
-    ( "prompty_prompt_10", [ "data", "atad" ] ),
-    ( "prompty_prompt_11", [ "data", "atad" ] ),
-    ( "prompty_prompt_12", [ "data", "atad" ] ),
-    ( "prompty_prompt_13", [ "data", "atad" ] ),
-    ( "prompty_prompt_14", [ "data", "atad" ] ),
-    ( "prompty_prompt_15", [ "data", "atad" ] ),
-    ( "prompty_prompt_16", [ "data", "atad" ] ),
-]
-
-################################|###############################
-############################FUNCTIONS###########################
-################################|###############################
-
-def append_converse(question, data, listbox):
-    listbox.insert("end", question)
-    dlen = len(data)
-    if dlen > 0:
-        derived_str = "  " + data[0]
-        if dlen > 1:
-            for d in data[1:]:
-                derived_str += f", {d}"
-        listbox.insert("end", derived_str)
-    listbox.insert("end", "")
 
 ################################|###############################
 #############################CLASSES############################
 ################################|###############################
 
 
+class Msg(CTkLabel):
+    def __init__(self, anchor: str, **kwargs):
+        super().__init__(text_color="black", justify="left", corner_radius=PADX, **kwargs)
+        self.pack(anchor=anchor, padx=PADX, pady=PADY)
+
+class UsrMsg(Msg):
+    def __init__(self, **kwargs):
+        super().__init__(anchor="e", fg_color=USR_MSG_COLOR, **kwargs)
+
+class BotMsg(Msg):
+    def __init__(self, **kwargs):
+        super().__init__(anchor="w", fg_color=BOT_MSG_COLOR, **kwargs)
+
+
+class Conversation(CTkScrollableFrame):
+    def __init__(self, master: CTkBaseClass, **kwargs):
+        super().__init__(master=master, **kwargs)
+
+        self.pack(padx=PADX, pady=PADY)
+        self.configure(width=400, height=400)
+        
+    def add(self, sent_by: str, text: str):
+        UsrMsg(master=self, text=text) if sent_by=="usr" else BotMsg(master=self, text=text)
+
+
 class Tab(CTkFrame):
-
-    def __init__(self, master, title, **kwargs):
-
+    def __init__(self, master: CTkBaseClass, title: str, **kwargs):
         super().__init__(master=master, **kwargs)
         
         self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
         
         self.title = CTkLabel(master=self, text=title, font=TITLE_FONT)
-        self.title.pack(pady=PADY/2)
-        
-        self.conversation = Listbox(master=self, selectmode=None, width=LISTBOX_WIDTH_CHARS, height=LISTBOX_HEIGHT_CHARS)
-        self.conversation.pack(padx=PADX, pady=PADY)
-        self.conversation.bind("<Button-1>", lambda event: "break")
-        self.conversation.bind("<Key>", lambda event: "break")
+        self.title.pack(pady=PADY, padx=PADX)
+
+        self.conversation = Conversation(master=self)
         
         self.entry = CTkEntry(master=self, placeholder_text="...")
+        self.entry.bind("<Return>", self.send_msg)
         self.entry.pack(padx=PADX, pady=PADY)
+        
+    def send_msg(self, event):
+        self.conversation.add("usr", self.entry.get())
+        self.entry.delete(0, "end")
 
 
 class TabView(CTkTabview):
-
-    def __init__(self, master, **kwargs):
-        
+    def __init__(self, master: CTkBaseClass, **kwargs):
         super().__init__(master=master, **kwargs)
         
-        self.pack()
+        self.pack(padx=PADX, pady=PADY)
         
         self.search_tab = self.add(TAB_NAMES[0])
         self.delay_tab = self.add(TAB_NAMES[1])
 
 
 class Gui(CTk):
-    
     def __init__(self):
-
+        super().__init__()
+        
         set_appearance_mode(APPEARANCE_MODE)
         set_default_color_theme(COLOUR_THEME)
-        
-        super().__init__()
 
         self.geometry(APP_GEOMETRY)
         self.title(APP_NAME)
@@ -130,4 +118,7 @@ class Gui(CTk):
         self.tabview = TabView(master=self)
         self.search_gui = Tab(master=self.tabview.search_tab, title="Search for Tickets")
         self.delay_gui = Tab(master=self.tabview.delay_tab, title="Delay Tickets")
+        
+        self.search_gui.conversation.add("bot", "Hello! How can I help you today?")
+        self.search_gui.conversation.add("usr", "You can't help me!")
         
