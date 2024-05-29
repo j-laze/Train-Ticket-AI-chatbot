@@ -37,6 +37,8 @@
 \author{Group 18: Alexander Vranic* - 100350592, James Hamilton - 100340006}
 
 
+
+
 \begin{document}
 
 \maketitle
@@ -47,6 +49,8 @@
     ABSTARACTIONS
 
 \end{abstract}
+
+
 
 
 \section{Introduction} \label{introduction}
@@ -105,7 +109,6 @@ Said information is to be, processed by a natural language processing algorithm,
 
 On arrival of a completion state, these tokens are to be formatted into a consistent data format, to be passed to the webscraping module, covered in section \ref{webscraping}. The results are then returned to the user via the GUI, covered in section \ref{user-interface}.
 
-
 \subsubsection{Task 2: Improving Customer Service} \label{task2-aims-objectives}
 
 Given historical performance data from years 2017 to 2022 for the service from London Liverpool Street to Norwich, we aim to provide a prediction for a \textit{actual} delayed time of arrival for journeys either direction between Norwich and London Liverpool Street, given the journey's current locational and time data for comparison to that of the historical data. With a machine learning algorithm known as K Nearest Neighbours (KNN), first publish in paper \cite{knn-origin} and later refined in \cite{knn-refine}.
@@ -123,6 +126,7 @@ The chatbot aspect is to prompt and process user input in much the same way as t
 \end{itemize}
 
 This time the appropriate tokens are to be processing into a consistent data format to be passed to the KNN regressor, from which the results can be displayed to the user through user interface, covered in section \ref{user-interface}.
+
 
 \subsection{Difficulties and Risks} \label{difficulties-risks}
 
@@ -148,7 +152,11 @@ It's no secret that scraping this information from SplitMyFare's online services
 
 % Draw a Gantt Chart and put it here.
 
+
+
 \section{Related Work} \label{related-work}
+
+Prior to designing our implementation, we conducted some light research into existing chatbot systems and services, to gauge current trends and standards in the field.
 
 \subsection{Transit Bot (\texorpdfstring{\cite{transitbot}})} \label{transit-bot}
 
@@ -168,6 +176,8 @@ One of it's primary selling points being that it does not rely on third party LL
 
 Though it's purpose and application is starkly different to our own, it's a good reference point for a standalone chatbot service, with a focus on user interaction and malleable conversation control.
 
+
+
 \section{Methods, Tools and Frameworks} \label{methods-tools-frameworks}
 
 
@@ -182,29 +192,34 @@ Though it's purpose and application is starkly different to our own, it's a good
 % What referring or reasoning methods
 
 % What prediction methods, such as kNN, neural networks etc. 
-             
+            
+
 \subsection{Languages, Packages, Tools} \label{languages-packages-tools}
 
-As mentioned in section \ref{difficulties-risks}, despite demonstrating on a Windows \cite{windows} machine, navigating cross OS development bounds us to cross platform tools and packages. The following sections .......................... outline our project's dependencies and development environment.
+As mentioned in section \ref{difficulties-risks}, despite demonstrating on a Windows \cite{windows} machine, navigating cross OS development bounds us to cross platform tools and packages. The following outlines our project's dependencies and development environment.
 
 \subsubsection{Programming Language: Python (\texorpdfstring{\cite{python}})} \label{programming-language}
+Our chosen programming language, for all aspects of our system is Python. It's the modern standard for programming in and around AI and machine learning, thanks to it's malleable syntax and vast array applicable of libraries and packages. Combined with it's user friendly package and environment management tools, explained in the following section \ref{environment-package-manager}, make it an ideal choice for our project.
 
-\subsubsection{Environment \& Package Managers} \label{environment-package-manager}
-
-\subsubsubsection{Anaconda (\texorpdfstring{\cite{anaconda}})}
-
-\subsubsubsection{Pip (\texorpdfstring{\cite{pip}})}
+\subsubsection{Environment \& Package Managers: \texorpdfstring{ \\ }{} Anaconda (\texorpdfstring{\cite{anaconda}}),  Pip (\texorpdfstring{\cite{pip}})} \label{environment-package-manager}
+To be clear, we are primarily using Anaconda as our virtual environment and manager and pip for our packages. It's to be noted, SpaCy's pre trained pipeline had to installed via base python commands. Both abide by our cross platform development policy, whilst providing user friendly interfaces, so we can focus our development time on the actual codebase.
 
 \subsubsection{Data Manipulation: Pandas (\texorpdfstring{\cite{pandas}})} \label{pandas}
+Before our data can be processed by any one of our models, it must be formatted into the expected data structures. Pandas is a powerful data manipulation library - another industry standard, and consequently a key component in our data processing pipeline.
 
 \subsubsection{NLP Package: SpaCy (\texorpdfstring{\cite{spacy}})} \label{spacy}
 
+
 \subsubsection{Mathematics \& Statistics: Numpy(\texorpdfstring{\cite{numpy}})} \label{numpy}
+Though we haven't extensively used its data structures, we utilise Numpy's mathematical functions in key components of our models. 
 
 \subsubsection{Machine Learning: Scikit-Learn (\texorpdfstring{\cite{scikitlearn}})} \label{scikitlearn}
+Our chosen machine learning library, Scikit-Learn, provides us with the means of incorporating machine learning algorithms into our codebase. Prior experience with made it an obvious choice for our project.
 
 \subsubsection{Web Scraping Package: Selenium(\texorpdfstring{\cite{selenium}})} \label{selenium}
+Selenium allows us to scrape dynamically generated websites (i.e. SplitMyFare (\cite {splitmyfare}) and Trainline (\cite{trainline})) via a headless browser emulation, in our language of choice. It comes integrated with measures, like custom user agents and proxies, to bypass anti-scraping measures.
 
+%plotting knn regression against actual values for testing, matplotlib
 
 
 % On programming language: using Python or Java, or others. 
@@ -266,7 +281,7 @@ As mentioned in section \ref{difficulties-risks}, despite demonstrating on a Win
 
 \subsection{System Testing} \label{system-testing}
 
-\subsection{Userbility Testing} \label{usability-testing}
+\subsection{Usability Testing} \label{usability-testing}
 
 
 \section{Evaluation and Discussion} \label{evaluation-discussion}
