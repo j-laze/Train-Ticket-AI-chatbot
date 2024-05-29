@@ -16,6 +16,11 @@ GitHub  \harvardyearleft 2024{\em a}\harvardyearright , `Github',
 GitHub  \harvardyearleft 2024{\em b}\harvardyearright , `Github copilot',
   \url{https://copilot.github.com}.
 
+\harvarditem{Hamilton \harvardand\ Vranic}{2024}{repo}
+Hamilton, J. \harvardand\ Vranic, A.  \harvardyearleft 2024\harvardyearright ,
+  `Implementation github repository',
+  \url{https://github.com/j-laze/Ai-CW2-Chatbot}.
+
 \harvarditem{Microsoft}{2024}{microsoft}
 Microsoft  \harvardyearleft 2024\harvardyearright , `Microsoft',
   \url{https://www.microsoft.com}.
@@ -32,9 +37,10 @@ OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
 Trainline  \harvardyearleft 2024\harvardyearright , `Trainline',
   \url{https://www.thetrainline.com}.
 
-\harvarditem{Turing}{1950}{Turing1950}
-Turing, A.~M.  \harvardyearleft 1950\harvardyearright , `Computing machinery
-  and intelligence', {\em Mind} {\bf 59}(236),~433--460.
+\harvarditem{Turing}{1950}{turing1950}
+Turing, A.  \harvardyearleft 1950\harvardyearright , `Computing machinery and
+  intelligence',
+  \url{https://www.cs.colostate.edu/~howe/cs440/csroo/yr2015fa/more_assignments/turing.pdf}.
 
 \harvarditem{Wang}{2018}{AI2018CW}
 Wang, W.  \harvardyearleft 2018\harvardyearright , `Artificial intelligence
@@ -43,7 +49,6 @@ Wang, W.  \harvardyearleft 2018\harvardyearright , `Artificial intelligence
 \harvarditem{Weizenbaum}{1966}{eliza}
 Weizenbaum, J.  \harvardyearleft 1966\harvardyearright , `Eliza—a computer
   program for the study of natural language communication between man and
-  machine', {\em Commun. ACM} {\bf 9}(1),~36--45.
-\newline\harvardurl{https://doi.org/10.1145/365153.365168}
+  machine', \url{https://dl.acm.org/doi/pdf/10.1145/365153.365168}.
 
 \end{thebibliography}
