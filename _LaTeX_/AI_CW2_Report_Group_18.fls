@@ -62,11 +62,12 @@ INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
+INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx10.tfm
+OUTPUT AI_CW2_Report_Group_18.pdf
+INPUT C:\Users\James\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT .\AI_CW2_Report_Group_18.bbl
 INPUT .\AI_CW2_Report_Group_18.bbl
 INPUT AI_CW2_Report_Group_18.bbl
-OUTPUT AI_CW2_Report_Group_18.pdf
-INPUT C:\Users\James\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmtt10.tfm
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
 INPUT C:\Users\James\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm

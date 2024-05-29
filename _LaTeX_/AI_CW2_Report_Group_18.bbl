@@ -24,8 +24,18 @@ OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
 OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
   \url{https://openai.com}.
 
+\harvarditem{Turing}{1950}{Turing1950}
+Turing, A.~M.  \harvardyearleft 1950\harvardyearright , `Computing machinery
+  and intelligence', {\em Mind} {\bf 59}(236),~433--460.
+
 \harvarditem{Wang}{2018}{AI2018CW}
 Wang, W.  \harvardyearleft 2018\harvardyearright , `Artificial intelligence
   modules (cmp6040, 7028) coursework specification'.
+
+\harvarditem{Weizenbaum}{1966}{eliza}
+Weizenbaum, J.  \harvardyearleft 1966\harvardyearright , `Eliza—a computer
+  program for the study of natural language communication between man and
+  machine', {\em Commun. ACM} {\bf 9}(1),~36--45.
+\newline\harvardurl{https://doi.org/10.1145/365153.365168}
 
 \end{thebibliography}

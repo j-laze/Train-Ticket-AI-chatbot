@@ -15,27 +15,42 @@
 
 \maketitle
 
+
 \begin{abstract}
 % This interim report presents (1) the outline of our coursework report, (2) some initial descriptions of the requirements of the coursework, the methods, programming languages, packages, tools that have been identified so far, and (3) an initial work plan.
     ABSTARACTIONS
 
 \end{abstract}
 
+
 \section{Introduction}
 
-In recent years, chatbots have become increasingly popular in a variety of applications, as such, so has the technology surrounding them. It is not our mission to compete with the likes of \cite{openai}, \cite{microsoft} and \cite{github} and their hugely successful LLMs, \cite{gpt4} and \cite{copilot} respectively. At the end of the day, any coursework is a learning experience.
+In recent years, chatbots have become increasingly popular in a variety of applications, as such, so has the technology surrounding them. It is not our mission to compete with the likes of \cite{openai}, \cite{microsoft} and \cite{github} and their hugely successful Large Language Models (LLMS), GPT-4 \cite{gpt4} and CoPilot \cite{copilot} respectively. At the end of the day, the coursework is a learning experience, not a fully fledged product.
 
-Our solution is a small clientside chatbot, integrated into an intuative graphical user interface and designed to handle prompts around a bespoke context. We utilise modern natural language processing (NLP) techniques, with a knowledge base and infernece engine, conjuncting machine learning and webscraping, in the name of enabeling the user with concurrent information to make informed descicions on their travel plans.
+Our solution is a small clientside chatbot, integrated into an intuative graphical user interface and designed to handle prompts around a bespoke context. We utilise modern natural language processing (NLP) techniques, with a knowledge base and infernece engine, conjuncting machine learning and webscraping, in the name of enabeling the user with concurrent information to make informed descicions on their train travel plans.
+
 
 \subsection{Background and Motivation}
-% A bit background information on chatbot in general and the coursework specification\citep{AI2018CW}.
 
-As specified in the assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system designed "\textit{to help their customers in finding the cheapest available ticket for their chosen journey}" and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
+\subsubsection{Compulsory Motivators (Assignment Brief)}
 
+As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
+
+Again, as stated in the brief, we are to provide some kind of user interface. Seeing that with our resources, any web based applications would be limited to local hosting anyway, we have decided to create a stand alone desktop application with a graphical user interface (GUI) to mimic the look and feel of modern chat applications.
+
+\subsubsection{Chatbot History}
+
+Quite some time before the advanced development of AI chatbots, Alan Turing considered the idea of a hypothetical machines ability to think, proposing a method of benchmarking a machines intelligence, aptly named "\textit{The Imitation Game}" \cite{Turing1950}, not to be confused with the Turing Test - being the broader concept of measuring a systems intelligence. In the paper, Turing proposed a system involving three parties: a human interrogator, a human respondent and a machine respondent. The core concept being that the human interrogator must converse with bohth responding parties and determine which is the machine. The machine is deemed intelligent if it is not reliably distinguished from the human respondent. Turing states that "\textit{at the end of the century}" - being the year 2000 - "\textit{one will be able to speak of machines thinking without expecting to be contradicted}". Though the timing of his prediction can be argued either way, the concept of a machine being able to hold conversation with a human is now a reality, to the point where as a modern humans, we must be consciously question the \textit{human-made} authenticity of the content and media we consume.
+
+Aritificial intelligence, designed to mimic human conversation has come a long way since the days of Turing. From the first chatbot ELIZA \cite{eliza} providing incoherent responses diverged from context, to today's CoPilot \cite{copilot} baring the capability to generate code and explain it in any array of natural languages, the technology has become an integral part of our daily lives.
 
 
 \subsection{Aim and Objective} 
-% You may rephrase the the aim and objectives from your point of view.  
+
+\subsubsection{Finding the Cheapest Ticket}
+
+\subsubsection{Improving Customer Service}
+
 
 \subsection{Difficulties and Risks}
 
