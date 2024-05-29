@@ -6,6 +6,12 @@
 
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{enumitem}
+
+
+\setlist[enumerate]{itemsep=0mm, parsep=0mm}
+
+
 
 %opening
 \title{Developing an Intelligent Chatbot}
@@ -35,9 +41,9 @@ Our solution is a small clientside chatbot, integrated into an intuative graphic
 
 \subsubsection{Compulsory Motivators (Assignment Brief)} \label{compulsory-motivators}
 
-As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" covered by \ref{finding-cheapest-ticket} and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" covered by section \ref{improving-service} respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
+As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" covered by \ref{finding-cheapest-ticket} and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" covered by section \ref{improving-service} respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one. In depth coverage of our interpretation seen in section \ref{finding-cheapest-ticket}.
 
-Again, as stated in the brief, we are to provide some kind of user interface. Seeing that with our resources, any web based applications would be limited to local hosting anyway, we have decided to create a stand alone desktop application with a graphical user interface (GUI) to mimic the look and feel of modern chat applications.
+Again, as stated in the brief, we are to provide some kind of user interface. Seeing that with our resources, any web based applications would be limited to local hosting anyway, we have decided to create a stand alone desktop application with a graphical user interface (GUI) to mimic the look and feel of modern chat applications. For further clarification, see section \ref{improving-service}.
 
 \subsubsection{Chatbot History} \label{chatbot-history}
 
@@ -48,6 +54,15 @@ Aritificial intelligence, designed to mimic human conversation has come a long w
 
 \subsection{Aim and Objective} \label{aim-objective}
 
+As I'm sure you're aware by this point in the report, we are to employ artificial intelligence techniques, in conjunction with webscraping to achieve the following two tasks (\cite{AI2018CW}), with data relevant to the current and/or user-specified timeframe(s).
+
+\begin{enumerate}
+    \item Finding the cheapest train ticket
+    \item Improving Customer Service
+\end{enumerate}
+
+The following subsections \ref{finding-cheapest-ticket} and \ref{improving-service} outline our subjective interpretation of the task one and two respectively. 
+
 \subsubsection{Finding the Cheapest Ticket} \label{finding-cheapest-ticket}
 
 We've taken it upon ourselves to not just find the cheapest individual ticket, but to find the cheapest combination of tickets for a given journey. Once information is derived and tokenised, we achieve this by scraping the SplitMyFare website \cite{splitmyfare}.
@@ -57,6 +72,7 @@ Seeing that their service does encour a small additional fee, initial intentions
 See conveyed evidence in sections \ref{work-plan} and \ref{design}, as well as the actual codebase itself\\ \textit{./webscrape/nationalrail.py} \cite{repo}.
 
 \subsubsection{Improving Customer Service} \label{improving-service}
+
 
 
 \subsection{Difficulties and Risks} \label{difficulties-risks}
