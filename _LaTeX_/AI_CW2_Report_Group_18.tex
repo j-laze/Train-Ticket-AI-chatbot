@@ -4,6 +4,8 @@
 \usepackage{natbib}
 \usepackage[margin=2cm]{geometry}
 
+\usepackage{url}
+
 %opening
 \title{Developing an Intelligent Chatbot}
 \author{Group 18: Alex Vranic* - 100350592, James Hamilton - 100340006}
@@ -15,17 +17,22 @@
 
 \begin{abstract}
 % This interim report presents (1) the outline of our coursework report, (2) some initial descriptions of the requirements of the coursework, the methods, programming languages, packages, tools that have been identified so far, and (3) an initial work plan.
+    ABSTARACTIONS
 
 \end{abstract}
 
 \section{Introduction}
-% 
-% (Brief introduction to the coursework. 
-% You don't have to write much.  
-% You may introduce a bit on chatbot in general if like, and why an intelligent chatbot is useful using the subsections headings if you wish.)  
+
+In recent years, chatbots have become increasingly popular in a variety of applications, as such, so has the technology surrounding them. It is not our mission to compete with the likes of \cite{openai}, \cite{microsoft} and \cite{github} and their hugely successful LLMs, \cite{gpt4} and \cite{copilot} respectively. At the end of the day, any coursework is a learning experience.
+
+Our solution is a small clientside chatbot, integrated into an intuative graphical user interface and designed to handle prompts around a bespoke context. We utilise modern natural language processing (NLP) techniques, with a knowledge base and infernece engine, conjuncting machine learning and webscraping, in the name of enabeling the user with concurrent information to make informed descicions on their travel plans.
 
 \subsection{Background and Motivation}
 % A bit background information on chatbot in general and the coursework specification\citep{AI2018CW}.
+
+As specified in the assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system designed "\textit{to help their customers in finding the cheapest available ticket for their chosen journey}" and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
+
+
 
 \subsection{Aim and Objective} 
 % You may rephrase the the aim and objectives from your point of view.  
@@ -80,12 +87,16 @@
 % You can describe your design for each key module or component of your chatbot, in a subsection. E.g. 
 \subsection{User Interface} 
 
+% conversion of input natural language, to processable tokens
 \subsection{NLP}
 
+% manipulation of historical tokenized data
 \subsection{Knowledgebase}
 
+% 
 \subsection{Inferring Engine}
 
+% knn, K nearest neighbour, regressor, aligns to best fit
 \subsection{Delay Prediction Models}
 
 \subsection{Conversation Control}

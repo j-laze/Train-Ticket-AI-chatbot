@@ -4,47 +4,45 @@ The top-level auxiliary file: AI_CW2_Report_Group_18.aux
 Reallocating 'name_of_file' (item size: 1) to 5 items.
 The style file: agsm.bst
 Reallocating 'name_of_file' (item size: 1) to 5 items.
-I found no \citation commands---while reading file AI_CW2_Report_Group_18.aux
 Database file #1: refs.bib
-You've used 0 entries,
+You've used 7 entries,
             2909 wiz_defined-function locations,
-            638 strings with 4764 characters,
-and the built_in function-call counts, 32 in all, are:
-= -- 0
-> -- 0
+            664 strings with 5261 characters,
+and the built_in function-call counts, 12518 in all, are:
+= -- 1885
+> -- 191
 < -- 0
-+ -- 0
-- -- 0
-* -- 0
-:= -- 18
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
-chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
-int.to.chr$ -- 5
++ -- 806
+- -- 56
+* -- 928
+:= -- 2833
+add.period$ -- 7
+call.type$ -- 7
+change.case$ -- 98
+chr.to.int$ -- 5
+cite$ -- 7
+duplicate$ -- 81
+empty$ -- 183
+format.name$ -- 74
+if$ -- 2193
+int.to.chr$ -- 7
 int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 3
-num.names$ -- 0
-pop$ -- 0
+missing$ -- 1
+newline$ -- 24
+num.names$ -- 70
+pop$ -- 52
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 105
 quote$ -- 0
-skip$ -- 1
+skip$ -- 82
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 2454
+swap$ -- 11
+text.length$ -- 98
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
+type$ -- 28
 warning$ -- 0
-while$ -- 0
+while$ -- 147
 width$ -- 0
-write$ -- 2
-(There was 1 error message)
+write$ -- 84

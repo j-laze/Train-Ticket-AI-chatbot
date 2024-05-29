@@ -1,3 +1,31 @@
 \begin{thebibliography}{xx}
 
+\harvarditem{Fix \harvardand\ Hodges}{1951}{knn}
+Fix, E. \harvardand\ Hodges, J.~L.  \harvardyearleft 1951\harvardyearright ,
+  `Discriminatory analysis, nonparametric discrimination'.
+
+\harvarditem{GitHub}{2024{\em a}}{github}
+GitHub  \harvardyearleft 2024{\em a}\harvardyearright , `Github',
+  \url{https://github.com}.
+
+\harvarditem{GitHub}{2024{\em b}}{copilot}
+GitHub  \harvardyearleft 2024{\em b}\harvardyearright , `Github copilot',
+  \url{https://copilot.github.com}.
+
+\harvarditem{Microsoft}{2024}{microsoft}
+Microsoft  \harvardyearleft 2024\harvardyearright , `Microsoft',
+  \url{https://www.microsoft.com}.
+
+\harvarditem{OpenAI}{2024{\em a}}{gpt4}
+OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
+  \url{https://openai.com/gpt-4}.
+
+\harvarditem{OpenAI}{2024{\em b}}{openai}
+OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
+  \url{https://openai.com}.
+
+\harvarditem{Wang}{2018}{AI2018CW}
+Wang, W.  \harvardyearleft 2018\harvardyearright , `Artificial intelligence
+  modules (cmp6040, 7028) coursework specification'.
+
 \end{thebibliography}
