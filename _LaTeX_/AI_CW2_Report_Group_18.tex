@@ -8,7 +8,7 @@
 
 %opening
 \title{Developing an Intelligent Chatbot}
-\author{Group 18: Alex Vranic* - 100350592, James Hamilton - 100340006}
+\author{Group 18: Alexander Vranic* - 100350592, James Hamilton - 100340006}
 
 
 \begin{document}
@@ -16,59 +16,65 @@
 \maketitle
 
 
-\begin{abstract}
+\begin{abstract} \label{abstract}
 % This interim report presents (1) the outline of our coursework report, (2) some initial descriptions of the requirements of the coursework, the methods, programming languages, packages, tools that have been identified so far, and (3) an initial work plan.
     ABSTARACTIONS
 
 \end{abstract}
 
 
-\section{Introduction}
+\section{Introduction} \label{introduction}
 
 In recent years, chatbots have become increasingly popular in a variety of applications, as such, so has the technology surrounding them. It is not our mission to compete with the likes of \cite{openai}, \cite{microsoft} and \cite{github} and their hugely successful Large Language Models (LLMS), GPT-4 \cite{gpt4} and CoPilot \cite{copilot} respectively. At the end of the day, the coursework is a learning experience, not a fully fledged product.
 
 Our solution is a small clientside chatbot, integrated into an intuative graphical user interface and designed to handle prompts around a bespoke context. We utilise modern natural language processing (NLP) techniques, with a knowledge base and infernece engine, conjuncting machine learning and webscraping, in the name of enabeling the user with concurrent information to make informed descicions on their train travel plans.
 
 
-\subsection{Background and Motivation}
+\subsection{Background and Motivation} \label{background}
 
-\subsubsection{Compulsory Motivators (Assignment Brief)}
+\subsubsection{Compulsory Motivators (Assignment Brief)} \label{compulsory-motivators}
 
-As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
+As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" covered by \ref{finding-cheapest-ticket} and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" covered by section \ref{improving-service} respectively. Following course content and implicit suggestions from the modules authorative figures, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn}), embedded within the original chatbot system created in task one.
 
 Again, as stated in the brief, we are to provide some kind of user interface. Seeing that with our resources, any web based applications would be limited to local hosting anyway, we have decided to create a stand alone desktop application with a graphical user interface (GUI) to mimic the look and feel of modern chat applications.
 
-\subsubsection{Chatbot History}
+\subsubsection{Chatbot History} \label{chatbot-history}
 
 Quite some time before the advanced development of AI chatbots, Alan Turing considered the idea of a hypothetical machines ability to think, proposing a method of benchmarking a machines intelligence, aptly named "\textit{The Imitation Game}" \cite{Turing1950}, not to be confused with the Turing Test - being the broader concept of measuring a systems intelligence. In the paper, Turing proposed a system involving three parties: a human interrogator, a human respondent and a machine respondent. The core concept being that the human interrogator must converse with bohth responding parties and determine which is the machine. The machine is deemed intelligent if it is not reliably distinguished from the human respondent. Turing states that "\textit{at the end of the century}" - being the year 2000 - "\textit{one will be able to speak of machines thinking without expecting to be contradicted}". Though the timing of his prediction can be argued either way, the concept of a machine being able to hold conversation with a human is now a reality, to the point where as a modern humans, we must be consciously question the \textit{human-made} authenticity of the content and media we consume.
 
 Aritificial intelligence, designed to mimic human conversation has come a long way since the days of Turing. From the first chatbot ELIZA \cite{eliza} providing incoherent responses diverged from context, to today's CoPilot \cite{copilot} baring the capability to generate code and explain it in any array of natural languages, the technology has become an integral part of our daily lives.
 
 
-\subsection{Aim and Objective} 
+\subsection{Aim and Objective} \label{aim-objective}
 
-\subsubsection{Finding the Cheapest Ticket}
+\subsubsection{Finding the Cheapest Ticket} \label{finding-cheapest-ticket}
 
-\subsubsection{Improving Customer Service}
+We've taken it upon ourselves to not just find the cheapest individual ticket, but to find the cheapest combination of tickets for a given journey. Once information is derived and tokenised, we achieve this by scraping the SplitMyFare website \cite{splitmyfare}.
+
+Seeing that their service does encour a small additional fee, initial intentions were to then compare the results from another source, such as Trainline \cite{trainline}, to ensure the cheapest pricing of single ticket journeys. However, it would seem that these websites are intentionally or unintentionally difficult to scrape informatino from, as such, focus was shifted to the components relevant to the names sake of the module.
+
+Evidence of this is conveyed later in the report, in sections............
+
+\subsubsection{Improving Customer Service} \label{improving-service}
 
 
-\subsection{Difficulties and Risks}
+\subsection{Difficulties and Risks} \label{difficulties-risks}
 
 % List as many as you can identify. 
 
-\subsection{Work Plan}
+\subsection{Work Plan} \label{work-plan}
 
 % Draw a Gantt Chart and put it here.
 
-\section{Related Work}
+\section{Related Work} \label{related-work}
 % Review some similar chatbot systems. (Write as much as you have now.)  
 
-\section{Methods, Tools and Frameworks}
+\section{Methods, Tools and Frameworks} \label{methods-tools-frameworks}
 % In this section, you should describe the methods, programming languages, packages, tools and framework you plan to use.
 % for this report, you can list some you have identified and intend to use.
 % No need to give any details.     
 
-\subsection{Methods}
+\subsection{Methods} \label{methods}
 
 % You may list some methods you will use for developing your chatbot, including 
    
@@ -80,7 +86,7 @@ Aritificial intelligence, designed to mimic human conversation has come a long w
 
 % What prediction methods, such as kNN, neural networks etc. 
              
-\subsection{Languages, Packages, Tools}
+\subsection{Languages, Packages, Tools} \label{languages-packages-tools}
 
 % On programming language: using Python or Java, or others. 
 
@@ -90,31 +96,31 @@ Aritificial intelligence, designed to mimic human conversation has come a long w
 
 % For Database: e.g, Postgres, or MongoDB     
  
-\subsection{Development Framework}
+\subsection{Development Framework} \label{development-framework}
 
 
-\section{Design of the Chatbot}
+\section{Design of the Chatbot} \label{design}
 
  
-\subsection{The Architecture of the chatbot}
+\subsection{The Architecture of the chatbot} \label{architecture}
 % You may draw a functional diagram if you like.  
 
 % You can describe your design for each key module or component of your chatbot, in a subsection. E.g. 
-\subsection{User Interface} 
+\subsection{User Interface} \label{user-interface}
 
 % conversion of input natural language, to processable tokens
-\subsection{NLP}
+\subsection{NLP} \label{nlp}
 
 % manipulation of historical tokenized data
-\subsection{Knowledgebase}
+\subsection{Knowledgebase} \label{knowledgebase}
 
 % 
-\subsection{Inferring Engine}
+\subsection{Inferring Engine} \label{inference-engine}
 
 % knn, K nearest neighbour, regressor, aligns to best fit
-\subsection{Delay Prediction Models}
+\subsection{Delay Prediction Models} \label{delay-prediction}
 
-\subsection{Conversation Control}
+\subsection{Conversation Control} \label{conversation-control}
 
 %\begin{table}
 %\centering
@@ -129,22 +135,22 @@ Aritificial intelligence, designed to mimic human conversation has come a long w
 %\label{TableCC}
 %\end{table}
 
-\section{Implementation}
+\section{Implementation} \label{implementation}
 
-\section{Testing}
+\section{Testing} \label{testing}
 
-\subsection{Unit Testing}
+\subsection{Unit Testing} \label{unit-testing}
 
-\subsection{Integration Testing}
+\subsection{Integration Testing} \label{integration-testing}
 
-\subsection{System Testing}
+\subsection{System Testing} \label{system-testing}
 
-\subsection{Userbility Testing}
+\subsection{Userbility Testing} \label{usability-testing}
 
 
-\section{Evaluation and Discussion}
+\section{Evaluation and Discussion} \label{evaluation-discussion}
 
-\section{Conclusion}
+\section{Conclusion} \label{conclusion}
 
 \bibliographystyle{agsm}
 %\bibliographystyle{apalike}

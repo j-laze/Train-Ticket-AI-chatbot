@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.28)  29 MAY 2024 04:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.28)  29 MAY 2024 05:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -146,25 +146,25 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 16.
 [1
 
-{C:/Users/James/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (AI_CW2_Report_Group_18.bbl [2]
+{C:/Users/James/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (AI_CW2_Report_Group_18.bbl
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 9.
- [3]) [4] (AI_CW2_Report_Group_18.aux)
+(Font)              <10.95> on input line 5.
+ [2] [3]) [4] (AI_CW2_Report_Group_18.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-05-08>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 2262 strings out of 474313
- 35741 string characters out of 5739306
+ 2299 strings out of 474313
+ 36359 string characters out of 5739306
  1934907 words of memory out of 5000000
- 24733 multiletter control sequences out of 15000+600000
+ 24770 multiletter control sequences out of 15000+600000
  564062 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,6n,65p,1291b,332s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,6n,65p,1291b,328s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on AI_CW2_Report_Group_18.pdf (4 pages, 128540 bytes).
+Output written on AI_CW2_Report_Group_18.pdf (4 pages, 130143 bytes).
 PDF statistics:
  50 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

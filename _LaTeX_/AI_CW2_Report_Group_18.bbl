@@ -1,5 +1,9 @@
 \begin{thebibliography}{xx}
 
+\harvarditem{Fare}{2024}{splitmyfare}
+Fare, S.~M.  \harvardyearleft 2024\harvardyearright , `Split my fare',
+  \url{https://www.splitmyfare.com}.
+
 \harvarditem{Fix \harvardand\ Hodges}{1951}{knn}
 Fix, E. \harvardand\ Hodges, J.~L.  \harvardyearleft 1951\harvardyearright ,
   `Discriminatory analysis, nonparametric discrimination'.
@@ -23,6 +27,10 @@ OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
 \harvarditem{OpenAI}{2024{\em b}}{openai}
 OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
   \url{https://openai.com}.
+
+\harvarditem{Trainline}{2024}{trainline}
+Trainline  \harvardyearleft 2024\harvardyearright , `Trainline',
+  \url{https://www.thetrainline.com}.
 
 \harvarditem{Turing}{1950}{Turing1950}
 Turing, A.~M.  \harvardyearleft 1950\harvardyearright , `Computing machinery
