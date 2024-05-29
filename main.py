@@ -14,37 +14,32 @@ import KNNmodel.model as model
 
 
 def main():
-    dataframe = processData.readTrainData()
+    df = pd.read_csv('processed_data.csv')
 
-    print(dataframe.head())
-    knn_model, le, scaler = model.create_and_train_knn(dataframe)
+    condition = df[['actual_arrival', 'norwich_arrival_time']].isna().all(axis=1)
+    df = df.dropna()
+
+    knn_model, le, scaler = model.create_and_train_knn(df)
+
 
     test_values = {
-        'planned_arrival': [0],
-        'planned_departure': [0],
-      # Add this
-        'actual_departure': [600.0],
+        'station': ['MANNGTR'],
+        'planned_departure': [1045.0],
+        'actual_departure': [1055.0],
         'departure_difference': [10.0],
-        'arrival_difference': [0],     # add london start and end
-
         'day_of_week': [4],
         'month': [3],
-        'station': ['IPSWICH']
+        'london_leave_time': [1000],
     }
 
-    # Convert tesijt_values to a DataFrame
     test_df = pd.DataFrame(test_values)
 
     test_df['station'] = le.transform(test_df['station'])
 
     test_df = scaler.transform(test_df)
 
-
-
-
     single_pred = knn_model.predict(test_df)
     print(single_pred)
-
 
 
 
