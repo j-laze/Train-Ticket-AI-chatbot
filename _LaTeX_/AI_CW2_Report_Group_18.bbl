@@ -1,10 +1,27 @@
 \begin{thebibliography}{xx}
 
-\harvarditem{Fare}{2024}{splitmyfare}
-Fare, S.~M.  \harvardyearleft 2024\harvardyearright , `Split my fare',
-  \url{https://www.splitmyfare.com}.
+\harvarditem{Anaconda}{2024}{anaconda}
+Anaconda  \harvardyearleft 2024\harvardyearright , `Anaconda',
+  \url{https://www.anaconda.com}.
 
-\harvarditem{Fix \harvardand\ Hodges}{1951}{knn}
+\harvarditem{{Chatbot AI Assist}}{2024}{chatbotai-assist}
+{Chatbot AI Assist}  \harvardyearleft 2024\harvardyearright , `Chatbot ai
+  assist', \url{https://www.chatbot.com}.
+
+\harvarditem{Cover \harvardand\ Hart}{1967}{knn-refine}
+Cover, T. \harvardand\ Hart, P.  \harvardyearleft 1967\harvardyearright ,
+  `Nearest neighbor pattern classification', {\em IEEE transactions on
+  information theory} {\bf 13}(1),~21--27.
+
+\harvarditem{Facebook}{2024{\em a}}{messenger}
+Facebook  \harvardyearleft 2024{\em a}\harvardyearright , `Facebook messenger',
+  \url{https://www.facebook.com/messenger/}.
+
+\harvarditem{Facebook}{2024{\em b}}{react}
+Facebook  \harvardyearleft 2024{\em b}\harvardyearright , `React',
+  \url{https://react.dev}.
+
+\harvarditem{Fix \harvardand\ Hodges}{1951}{knn-origin}
 Fix, E. \harvardand\ Hodges, J.~L.  \harvardyearleft 1951\harvardyearright ,
   `Discriminatory analysis, nonparametric discrimination'.
 
@@ -18,8 +35,15 @@ GitHub  \harvardyearleft 2024{\em b}\harvardyearright , `Github copilot',
 
 \harvarditem{Hamilton \harvardand\ Vranic}{2024}{repo}
 Hamilton, J. \harvardand\ Vranic, A.  \harvardyearleft 2024\harvardyearright ,
-  `Implementation github repository',
-  \url{https://github.com/j-laze/Ai-CW2-Chatbot}.
+  `{Implementation}', \url{https://github.com/j-laze/Ai-CW2-Chatbot}.
+
+\harvarditem{Lekarski}{2024}{transitbot}
+Lekarski, A.  \harvardyearleft 2024\harvardyearright , `Transit bot',
+  \url{https://www.transit.bot}.
+
+\harvarditem{Microsoft}{2023}{windows}
+Microsoft  \harvardyearleft 2023\harvardyearright , `Windows 11',
+  \url{https://www.microsoft.com/windows}.
 
 \harvarditem{Microsoft}{2024}{microsoft}
 Microsoft  \harvardyearleft 2024\harvardyearright , `Microsoft',
@@ -32,6 +56,22 @@ OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
 \harvarditem{OpenAI}{2024{\em b}}{openai}
 OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
   \url{https://openai.com}.
+
+\harvarditem{{Python Software Foundation}}{2024{\em a}}{pip}
+{Python Software Foundation}  \harvardyearleft 2024{\em a}\harvardyearright ,
+  `pip pypi', \url{https://pypi.org/project/pip/}.
+
+\harvarditem{{Python Software Foundation}}{2024{\em b}}{python}
+{Python Software Foundation}  \harvardyearleft 2024{\em b}\harvardyearright ,
+  `Python', \url{https://www.python.org}.
+
+\harvarditem{{Split My Fare}}{2024}{splitmyfare}
+{Split My Fare}  \harvardyearleft 2024\harvardyearright , `Split my fare',
+  \url{https://www.splitmyfare.com}.
+
+\harvarditem{{The Fedora Project}}{2024}{fedora}
+{The Fedora Project}  \harvardyearleft 2024\harvardyearright , `Fedora linux',
+  \url{https://fedoraproject.org}.
 
 \harvarditem{Trainline}{2024}{trainline}
 Trainline  \harvardyearleft 2024\harvardyearright , `Trainline',
