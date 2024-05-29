@@ -60,7 +60,7 @@ Our solution is a small client side chatbot, integrated into an intuitive graphi
 
 \subsubsection{Compulsory Motivators (Assignment Brief)} \label{compulsory-motivators}
 
-As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" covered by \ref{task1-aims-objectives} and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" covered by section \ref{task2-aims-objectives} respectively. Following implicit suggestions from the course contents, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn-origin}), embedded within the original chatbot system created in task one. In depth coverage of our interpretation seen in section \ref{task1-aims-objectives}.
+As specified in the CMP6040/7028 assignment brief \cite{AI2018CW}, tasks one and two are to implement an intelligent conversational system, designed to "\textit{help their customers in finding the cheapest available ticket for their chosen journey}" covered by section \ref{task1-aims-objectives} and "\textit{to improve customer service satisfaction by applying some appropriate AI techniques}" covered by section \ref{task2-aims-objectives} respectively. Following implicit suggestions from the course contents, our second task implements a delay prediction model, based on historical data (also provided in the course material), in the form of a KNN regressor (\cite{knn-origin}), embedded within the original chatbot system created in task one. In depth coverage of our interpretation of the brief seen in section \ref{task1-aims-objectives}.
 
 Again, as stated in the brief, we are to provide some kind of user interface. Seeing that with our resources, any web based applications would be limited to local hosting anyway, we have decided to create a stand alone desktop application with a graphical user interface (GUI) to mimic the look and feel of modern chat applications. For further clarification, see section \ref{task2-aims-objectives}.
 
@@ -150,7 +150,7 @@ It's no secret that scraping this information from SplitMyFare's online services
 
 \section{Related Work} \label{related-work}
 
-\subsection{Transit Bot (\cite{transitbot})} \label{transit-bot}
+\subsection{Transit Bot (\texorpdfstring{\cite{transitbot}})} \label{transit-bot}
 
 Transit Bot is a French server-side chatbot service, interacting with it's users via Facebook Messenger (\cite{messenger}), to provide integration with ticket booking services, all through text based natural language conversation, rather than a graphical user interface.
 
@@ -160,7 +160,7 @@ It's selling point is a streamlined ticket information and purchasing process. U
 
 Being one of the closest examples to our own project, it's a good reference point for what we aim to achieve, albeit on a much smaller scale.
 
-\subsection{ChatBot AI Assistant (\cite{chatbotai-assist})} \label{chatbot-ai-assistant}
+\subsection{ChatBot AI Assistant (\texorpdfstring{\cite{chatbotai-assist}})} \label{chatbot-ai-assistant}
 
 ChatBot AI Assistant provides a semi bespoke chatbot service to website owners, giving them accessible means to provide training data and conversation control to their chatbot. It can proactively engage with users through default notification on entry to the website, lead customers through sales and recommended products, automatically generate and qualify sales prospects, provide a user friendly platform to purchase, order or book services, more cost effectively than a human customer service representative.
 
@@ -185,13 +185,27 @@ Though it's purpose and application is starkly different to our own, it's a good
              
 \subsection{Languages, Packages, Tools} \label{languages-packages-tools}
 
-\subsubsection{Programming Language (\cite{python})} \label{programming-language}
+As mentioned in section \ref{difficulties-risks}, despite demonstrating on a Windows \cite{windows} machine, navigating cross OS development bounds us to cross platform tools and packages. The following sections .......................... outline our project's dependencies and development environment.
 
-\subsubsection{Package \& Environment Managers} \label{package-environment-manager}
+\subsubsection{Programming Language: Python (\texorpdfstring{\cite{python}})} \label{programming-language}
 
-\subsubsubsection{Anaconda (\cite{anaconda})}
+\subsubsection{Environment \& Package Managers} \label{environment-package-manager}
 
-\subsubsubsection{Pip (\cite{pip})}
+\subsubsubsection{Anaconda (\texorpdfstring{\cite{anaconda}})}
+
+\subsubsubsection{Pip (\texorpdfstring{\cite{pip}})}
+
+\subsubsection{Data Manipulation: Pandas (\texorpdfstring{\cite{pandas}})} \label{pandas}
+
+\subsubsection{NLP Package: SpaCy (\texorpdfstring{\cite{spacy}})} \label{spacy}
+
+\subsubsection{Mathematics \& Statistics: Numpy(\texorpdfstring{\cite{numpy}})} \label{numpy}
+
+\subsubsection{Machine Learning: Scikit-Learn (\texorpdfstring{\cite{scikitlearn}})} \label{scikitlearn}
+
+\subsubsection{Web Scraping Package: Selenium(\texorpdfstring{\cite{selenium}})} \label{selenium}
+
+
 
 % On programming language: using Python or Java, or others. 
 
@@ -221,7 +235,7 @@ Though it's purpose and application is starkly different to our own, it's a good
 % manipulation of historical tokenized data
 \subsection{Knowledgebase} \label{knowledgebase}
 
-% 
+% dialogue manager, state machine
 \subsection{Inferring Engine} \label{inference-engine}
 
 % knn, K nearest neighbour, regressor, aligns to best fit

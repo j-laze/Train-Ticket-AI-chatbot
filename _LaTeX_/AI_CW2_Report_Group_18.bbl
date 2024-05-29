@@ -13,6 +13,10 @@ Cover, T. \harvardand\ Hart, P.  \harvardyearleft 1967\harvardyearright ,
   `Nearest neighbor pattern classification', {\em IEEE transactions on
   information theory} {\bf 13}(1),~21--27.
 
+\harvarditem{{Explosion AI}}{2024}{spacy}
+{Explosion AI}  \harvardyearleft 2024\harvardyearright , `spacy',
+  \url{https://spacy.io}.
+
 \harvarditem{Facebook}{2024{\em a}}{messenger}
 Facebook  \harvardyearleft 2024{\em a}\harvardyearright , `Facebook messenger',
   \url{https://www.facebook.com/messenger/}.
@@ -49,6 +53,10 @@ Microsoft  \harvardyearleft 2023\harvardyearright , `Windows 11',
 Microsoft  \harvardyearleft 2024\harvardyearright , `Microsoft',
   \url{https://www.microsoft.com}.
 
+\harvarditem{NumPy}{2024}{numpy}
+NumPy  \harvardyearleft 2024\harvardyearright , `Numpy',
+  \url{https://numpy.org}.
+
 \harvarditem{OpenAI}{2024{\em a}}{gpt4}
 OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
   \url{https://openai.com/gpt-4}.
@@ -57,6 +65,10 @@ OpenAI  \harvardyearleft 2024{\em a}\harvardyearright , `Gpt-4',
 OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
   \url{https://openai.com}.
 
+\harvarditem{Pandas}{2024}{pandas}
+Pandas  \harvardyearleft 2024\harvardyearright , `Pandas',
+  \url{https://pandas.pydata.org}.
+
 \harvarditem{{Python Software Foundation}}{2024{\em a}}{pip}
 {Python Software Foundation}  \harvardyearleft 2024{\em a}\harvardyearright ,
   `pip pypi', \url{https://pypi.org/project/pip/}.
@@ -64,6 +76,14 @@ OpenAI  \harvardyearleft 2024{\em b}\harvardyearright , `Openai',
 \harvarditem{{Python Software Foundation}}{2024{\em b}}{python}
 {Python Software Foundation}  \harvardyearleft 2024{\em b}\harvardyearright ,
   `Python', \url{https://www.python.org}.
+
+\harvarditem{{Scikit Learn}}{2024}{scikitlearn}
+{Scikit Learn}  \harvardyearleft 2024\harvardyearright , `Scikit learn',
+  \url{https://scikit-learn.org}.
+
+\harvarditem{Selenium}{2024}{selenium}
+Selenium  \harvardyearleft 2024\harvardyearright , `Selenium',
+  \url{https://www.selenium.dev}.
 
 \harvarditem{{Split My Fare}}{2024}{splitmyfare}
 {Split My Fare}  \harvardyearleft 2024\harvardyearright , `Split my fare',
