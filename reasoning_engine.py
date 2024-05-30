@@ -319,62 +319,66 @@ class DialogueFlowEngine:
         return None
 
 
-    def run(self):
+
+    def step(self):
+
         if self.state == 'ASKING_SERVICE':
             self.ask_question("Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
+        
+        elif self.state =='ASKING_PREDICTION_STATION':
+            self.ask_question("Please provide me the current station where you are located")
 
+        elif self.state == 'ASKING_PREDICTION_DELAY':
+            self.ask_question("Please tell me your current delay time at your station")
+
+        elif self.state == 'ASKING_PREDICTION_LONDON_LEAVE_TIME':
+            self.ask_question("Please tell me the time you left London")
+
+        elif self.state == 'ASKING_PREDICTION_NORWICH_PLANNED_TIME':
+            self.ask_question("Please tell me the time your meant to arrive at norwich")
+
+        elif self.state == 'ASKING_JOURNEY_DETAILS':
+            self.ask_question(
+                "Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
+        elif self.state == 'ASKING_START_LOCATION':
+            self.ask_question("Where are you travelling from? ")
+
+        elif self.state == 'ASKING_END_LOCATION':
+            self.ask_question(f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
+
+        elif self.state == 'ASKING_JOURNEY_TYPE':
+            self.ask_question("Are you looking for a single or return ticket? ")
+
+        elif self.state == 'ASKING_OUTGOING_TIME_CONSTRAINT':
+            self.ask_question(f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
+
+        elif self.state == 'ASKING_OUTGOING_DATE_TIME':
+            self.ask_question("What time would you like to travel at ? ")
+
+        elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
+            self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
+
+        elif self.state == 'ASKING_RETURN_DATE_TIME':
+            self.ask_question("What's your return date and time? ")
+
+        elif self.state == 'ASKING_PASSENGERS':
+            self.ask_question(f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
+
+        elif self.state == 'ASKING_RAILCARD':
+            self.ask_question("Do you have a railcard? ")
+
+
+        elif self.state == 'COMPLETED_PREDICTION':
+            self.completion_prediction()
+
+        elif self.state == 'COMPLETED':
+            self.completion()
+
+
+    def loop(self):
+        # print("WTF")
+        # if self.state == 'ASKING_SERVICE':
+        #     self.ask_question("Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
+            
         while True:
-            if self.state =='ASKING_PREDICTION_STATION':
-                self.ask_question("Please provide me the current station where you are located")
-
-            elif self.state == 'ASKING_PREDICTION_DELAY':
-                self.ask_question("Please tell me your current delay time at your station")
-
-            elif self.state == 'ASKING_PREDICTION_LONDON_LEAVE_TIME':
-                self.ask_question("Please tell me the time you left London")
-
-            elif self.state == 'ASKING_PREDICTION_NORWICH_PLANNED_TIME':
-                self.ask_question("Please tell me the time your meant to arrive at norwich")
-
-            elif self.state == 'ASKING_JOURNEY_DETAILS':
-                self.ask_question(
-                    "Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
-            elif self.state == 'ASKING_START_LOCATION':
-                self.ask_question("Where are you travelling from? ")
-
-            elif self.state == 'ASKING_END_LOCATION':
-                self.ask_question(f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
-
-            elif self.state == 'ASKING_JOURNEY_TYPE':
-                self.ask_question("Are you looking for a single or return ticket? ")
-
-            elif self.state == 'ASKING_OUTGOING_TIME_CONSTRAINT':
-                self.ask_question(f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
-
-            elif self.state == 'ASKING_OUTGOING_DATE_TIME':
-                self.ask_question("What time would you like to travel at ? ")
-
-            elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
-                self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
-
-            elif self.state == 'ASKING_RETURN_DATE_TIME':
-                self.ask_question("What's your return date and time? ")
-
-            elif self.state == 'ASKING_PASSENGERS':
-                self.ask_question(f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
-
-            elif self.state == 'ASKING_RAILCARD':
-                self.ask_question("Do you have a railcard? ")
-
-
-            elif self.state == 'COMPLETED_PREDICTION':
-                self.completion_prediction()
-
-
-            elif self.state == 'COMPLETED':
-                self.completion()
-
-            elif self.state == 'EXIT':
-                break;
-
-
+            self.step()

@@ -6,8 +6,55 @@ from reasoning_engine import DialogueFlowEngine
 import preprocessData.processData as processData
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-from models.linearRegressionModel import create_and_train_linear_regression
+from gui_utils import *
 
+# from models.linearRegressionModel import create_and_train_linear_regression
+
+class App(CTk):
+    def __init__(self):
+        super().__init__()
+        
+        self.messages: list[(str, str)] = [] ## [(sent_by, text),...]
+
+        set_appearance_mode(APPEARANCE_MODE)
+        set_default_color_theme(COLOUR_THEME)
+
+        self.geometry(APP_GEOMETRY)
+        self.title(APP_NAME)
+        
+        self.frame = CTkFrame(master=self)
+        self.frame.pack(fill=FRAME_FILL, expand=FRAME_EXPAND, padx=PADX*3, pady=PADY*3)
+
+        self.header = CTkLabel(master=self.frame, text=APP_NAME, font=HEADER_FONT)
+        self.header.pack(pady=(2*PADY, PADY), padx=PADX)
+        
+        self.conversation = Conversation(master=self.frame)
+        
+        self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
+        self.entry.bind("<Return>", self.send_user_msg)
+        self.entry.pack(padx=PADX, pady=PADY)
+        
+
+
+
+         
+        # self.send_bot_msg("INITIAL PROMPT")
+        
+    def waiting_for_user(self):
+        return self.messages[-1][0] == "bot"
+    
+    def waiting_for_bot(self):
+        return not self.waiting_for_user()
+        
+    def send_user_msg(self, _):
+        if self.waiting_for_user():
+            self.messages.append(("usr", self.entry.get()))
+            self.conversation.add("usr", self.entry.get())
+            self.entry.delete(0, "end")
+            
+    def send_bot_msg(self, msg):
+        self.messages.append(("bot", msg))
+        self.conversation.add("bot", msg)
 
 
 
@@ -22,6 +69,9 @@ def main():
         hours = minutes // 60
         minutes = minutes % 60
         return f"{hours:02d}:{minutes:02d}"
+    
+    
+    
 
     #data2 = processData.readTrainData()
 
@@ -32,10 +82,8 @@ def main():
     create_entity_ruler(nlp, patterns)
     engine = DialogueFlowEngine(nlp, station_df)
 
-    engine.run()
-
-
-
+    engine.loop()
+    
 
 
 
