@@ -134,20 +134,20 @@ def test_splitmyfare_get_search_url():
         print()
 
 def test_splitmyfare_get_journeys():
-    # url = "https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate=2024-05-11T12:00"
-    # journeys = splitmyfare.OLD_get_journeys(url)
-
     print()
     print("====================================TEST-SPLIT-MY-FARE-GET-JOURNEYS==============================")
     print()
     for description, enquiry, _ in valid_enquiry_tuplist_desc_obj_url:
         print(f"| DESCRIPTION  | {description}")
         passed = True
+        priced_journeys = None
         try:
-            journeys = splitmyfare.get_journeys(enquiry)
+            priced_journeys = splitmyfare.get_journeys(enquiry)
         except Exception as e:
             print(e)
             passed = False
+        for price_str, _ in priced_journeys:
+            print("|", price_str)
         print(f"| TEST RESULT  | {'PASSED' if passed else 'FAILED'}")
         print()
 
