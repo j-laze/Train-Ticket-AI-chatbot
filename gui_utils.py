@@ -16,10 +16,10 @@ PADY = 10
 
 ## WINDOW/APP:
 
-WINDOW_WIDTH  = 600
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH  = 450
+WINDOW_HEIGHT = 650
 APP_GEOMETRY = f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}"
-APP_NAME = "Tinker Trian"
+APP_NAME = "Tinker Trian Chatbot"
 
 ## TABVIEW:
 
@@ -30,16 +30,16 @@ TAB_NAMES = [ "Find Best Tickets", "Delay Information" ]
 FRAME_FILL = "both"
 FRAME_EXPAND = True
 
-## TITLES:
+## HEADER:
 
-TITLE_FONT = ("Arial", 20)
-TITLE_PADX = 10
-TITLE_PADY = 20
+HEADER_FONT = ("Arial", 20)
+HEADER_PADX = 10
+HEADER_PADY = 20
 
 ## CONVERSATION:
 
-CONVO_WIDTH  = 400
-CONVO_HEIGHT = 400
+CONVO_WIDTH  = 350
+CONVO_HEIGHT = 450
 MSG_FONT = ("Arial", 12)
 BOT_MSG_COLOR = "lightblue"
 USR_MSG_COLOR = "lightgreen"
@@ -69,53 +69,17 @@ class Conversation(CTkScrollableFrame):
         super().__init__(master=master, **kwargs)
 
         self.pack(padx=PADX, pady=PADY)
-        self.configure(width=400, height=400)
+        self.configure(width=CONVO_WIDTH, height=CONVO_HEIGHT)
         
     def add(self, sent_by: str, text: str):
         UsrMsg(master=self, text=text) if sent_by=="usr" else BotMsg(master=self, text=text)
-
-
-# class Content(CTkFrame):
-#     def __init__(self, master: CTkBaseClass, title: str, **kwargs):
-#         super().__init__(master=master, **kwargs)
-#         
-#         self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
-#         
-#         self.title = CTkLabel(master=self, text=title, font=TITLE_FONT)
-#         self.title.pack(pady=PADY, padx=PADX)
-# 
-#         self.conversation = Conversation(master=self)
-#         
-#         self.entry = CTkEntry(master=self, placeholder_text="...")
-#         self.entry.bind("<Return>", self.send_msg)
-#         self.entry.pack(padx=PADX, pady=PADY)
-#         
-#     def send_msg(self, event):
-#         self.conversation.add("usr", self.entry.get())
-#         self.entry.delete(0, "end")
-
-
-# class App(CTk):
-#     def __init__(self):
-#         super().__init__()
-#         
-#         set_appearance_mode(APPEARANCE_MODE)
-#         set_default_color_theme(COLOUR_THEME)
-# 
-#         self.geometry(APP_GEOMETRY)
-#         self.title(APP_NAME)
-# 
-#         self.gui = Content(master=self, title="Search for Tickets")
-#         
-#         self.gui.conversation.add("bot", "Hello! How can I help you today?")
-#         self.gui.conversation.add("usr", "You can't help me!")
 
 
 class App(CTk):
     def __init__(self):
         super().__init__()
         
-        self.messages: list[(str, str)] = []
+        self.messages: list[(str, str)] = [] ## [(sent_by, text),...]
 
         set_appearance_mode(APPEARANCE_MODE)
         set_default_color_theme(COLOUR_THEME)
@@ -124,25 +88,27 @@ class App(CTk):
         self.title(APP_NAME)
         
         self.frame = CTkFrame(master=self)
-        self.frame.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
+        self.frame.pack(fill=FRAME_FILL, expand=FRAME_EXPAND, padx=PADX*3, pady=PADY*3)
 
-        self.header = CTkLabel(master=self.frame, text="Search for Tickets", font=TITLE_FONT)
-        self.header.pack(pady=PADY, padx=PADX)
+        self.header = CTkLabel(master=self.frame, text=APP_NAME, font=HEADER_FONT)
+        self.header.pack(pady=(2*PADY, PADY), padx=PADX)
         
         self.conversation = Conversation(master=self.frame)
         
-        self.entry = CTkEntry(master=self.frame, placeholder_text="...")
-        self.entry.bind("<Return>", self.send_usr_msg)
+        self.entry = CTkEntry(master=self.frame, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
+        self.entry.bind("<Return>", self.send_user_msg)
         self.entry.pack(padx=PADX, pady=PADY)
         
-    def waiting_user_in(self):
+        self.send_bot_msg("INITIAL PROMPT")
+        
+    def waiting_for_user(self):
         return self.messages[-1][0] == "bot"
     
-    def waiting_bot_out(self):
-        return not self.waiting_user_in()
+    def waiting_for_bot(self):
+        return not self.waiting_for_user()
         
-    def send_usr_msg(self, _):
-        if self.waiting_user_in:
+    def send_user_msg(self, _):
+        if self.waiting_for_user():
             self.messages.append(("usr", self.entry.get()))
             self.conversation.add("usr", self.entry.get())
             self.entry.delete(0, "end")
