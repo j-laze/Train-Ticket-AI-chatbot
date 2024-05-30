@@ -166,28 +166,12 @@ class DialogueFlowEngine:
 
             priced_journeys = get_journeys(demo_enquiry)
 
-
-
-
-
-
-
-
-
     def handle_return_time_constraint(self, doc):
         if self.user_enquiry.journey_type == 'RETURN':
             self.state = 'ASKING_PASSENGERS'
         elif self.user_enquiry.journey_type == 'RETURN':
             self.state = 'ASKING_RETURN_DATE_TIME'
         self.state = self.dialogue_flow[self.state]['next_state']
-
-
-
-
-
-
-
-
 
     def handle_return_date_time(self, doc):
         recognise_dates(doc, self.user_enquiry)
@@ -199,30 +183,16 @@ class DialogueFlowEngine:
             self.state = 'ASKING_RETURN_DATE_TIME'
         self.state = self.dialogue_flow[self.state]['next_state']
 
-
-
-
-
-
             # TODO add a check to see if the station is in the station_df
-
-
 
     def journey_type_check(self):
         return self.user_enquiry.journey_type is not None
-
-
-
-
-
-
 
     def process_input(self, user_input):
         doc = self.nlp(user_input)
         handler_method = self.dialogue_flow[self.state]['method']
         if handler_method:
             handler_method(doc)
-
 
     def ask_question(self, question):
         handler_check = self.dialogue_flow[self.state]['check']
@@ -235,8 +205,6 @@ class DialogueFlowEngine:
         self.process_input(user_input)
         print(self.user_enquiry)
         print()
-
-
 
     def run(self):
         if self.state == 'ASKING_JOURNEY_DETAILS':
@@ -268,7 +236,6 @@ class DialogueFlowEngine:
 
             elif self.state == 'ASKING_RAILCARD':
                 self.ask_question("Do you have a railcard? ")
-
 
             elif self.state == 'COMPLETED':
                 self.completion()

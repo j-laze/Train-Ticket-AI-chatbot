@@ -105,17 +105,17 @@ As for how this determines the functionality of the actual chatbot. Our system s
         \begin{itemize} \item If so, then repeat the above, minus passengers \end{itemize}
 \end{itemize}
 
-Said information is to be, processed by a natural language processing algorithm, covered in section \ref{nlp}, with the resulting tokens updating the state machine responsible for determining its next prompts, until it reaches a completion state. Conversational control covered in section \ref{conversation-control}.
+Said information is to be, processed by a natural language processing algorithm, covered in section \ref{nlp-design}, with the resulting tokens updating the state machine responsible for determining its next prompts, until it reaches a completion state. Conversational control covered in section \ref{dialogue-flow-design}.
 
-On arrival of a completion state, these tokens are to be formatted into a consistent data format, to be passed to the webscraping module, covered in section \ref{webscraping}. The results are then returned to the user via the GUI, covered in section \ref{user-interface}.
+On arrival of a completion state, these tokens are to be formatted into a consistent data format, to be passed to the webscraping module, covered in section \ref{webscraping}. The results are then returned to the user via the GUI, covered in section \ref{user-interface-design}.
 
 \subsubsection{Task 2: Improving Customer Service} \label{task2-aims-objectives}
 
 Given historical performance data from years 2017 to 2022 for the service from London Liverpool Street to Norwich, we aim to provide a prediction for a \textit{actual} delayed time of arrival for journeys either direction between Norwich and London Liverpool Street, given the journey's current locational and time data for comparison to that of the historical data. With a machine learning algorithm known as K Nearest Neighbours (KNN), first publish in paper \cite{knn-origin} and later refined in \cite{knn-refine}.
 
-KNN being a simple yet effective algorithm for regression and classification problems, with applications in pattern recognition, we thought it sufficient for the task at hand. It's to be noted that it is a lazy learning algorithm, so works by memorisation of the training data, rather than learning a discriminative function. Regardless, see our coverage of its implementation in section \ref{delay-prediction}.
+KNN being a simple yet effective algorithm for regression and classification problems, with applications in pattern recognition, we thought it sufficient for the task at hand. It's to be noted that it is a lazy learning algorithm, so works by memorisation of the training data, rather than learning a discriminative function. Regardless, see our coverage of its implementation in section \ref{dialogue-flow-design}.
 
-The chatbot aspect is to prompt and process user input in much the same way as task one, with different tokenisation parameters and completion states. Again coverage seen in sections \ref{conversation-control}.
+The chatbot aspect is to prompt and process user input in much the same way as task one, with different tokenisation parameters and completion states. Again coverage seen in sections \ref{dialogue-flow-design}.
 
 \subsubsubsection{Information To Derive}
 \begin{itemize}
@@ -125,7 +125,7 @@ The chatbot aspect is to prompt and process user input in much the same way as t
     \item Current predicted delay time given by service provider
 \end{itemize}
 
-This time the appropriate tokens are to be processing into a consistent data format to be passed to the KNN regressor, from which the results can be displayed to the user through user interface, covered in section \ref{user-interface}.
+This time the appropriate tokens are to be processing into a consistent data format to be passed to the KNN regressor, from which the results can be displayed to the user through user interface, covered in section \ref{user-interface-design}.
 
 
 \subsection{Difficulties and Risks} \label{difficulties-risks}
@@ -142,10 +142,10 @@ With one member using Windows 11 \cite{windows}, and the other using Fedora Linu
 In developing our solution to task one, we'll be bound to come across issues regarding defining our ruleset's for the NLP state machine. This is to be considered regarding our time management, though through careful planning and testing, the time deficit can be minimised.
 
 \subsubsubsection{KNN Regressor}
-Without actually implementing the solution, we are yet to see if the model passes our specifications outlined in section \ref{delay-prediction}. If the model is not accurate enough, we may have to consider a more complex model, which could take more time to implement, train and test. All things to consider in our time management covered in section \ref{work-plan}.
+Without actually implementing the solution, we are yet to see if the model passes our specifications outlined in section \ref{delay-prediction-design}. If the model is not accurate enough, we may have to consider a more complex model, which could take more time to implement, train and test. All things to consider in our time management covered in section \ref{work-plan}.
 
 \subsubsection{Webscraping Deterance Technologies} \label{webscrape-deterance}
-It's no secret that scraping this information from SplitMyFare's online services is not something they wish to facilitate. Ultimately, between dynamic content (with arbitrary class names and tag ids, generated by frameworks like React \cite{react}) and other security measures in place to specifically prevent scraping, time is to be allocated to the development of a robust webscraping module, covered in section \ref{webscraping}.
+It's no secret that scraping this information from SplitMyFare's online services is not something they wish to facilitate. Ultimately, between dynamic content (with arbitrary class names and tag ids, generated by frameworks like React \cite{react}) and other security measures in place to specifically prevent scraping, time is to be allocated to the development of a robust webscraping module, covered in section \ref{webscraping-design}.
 
 
 \subsection{Work Plan} \label{work-plan}
@@ -258,30 +258,71 @@ Selenium allows us to scrape dynamically generated websites (i.e. SplitMyFare (\
 \subsection{Development Framework} \label{development-framework}
 
 
-\section{Design of the Chatbot} \label{design}
 
+\section{Design} \label{design}
+
+The following outlines and depicts the design of our system architecture and how key components interface with each-other.
+
+
+\subsection{Custom Types} \label{custom-types}
+
+As powerful as Python's (\cite{python}) dynamic typing is, it can be a double edged sword. Especially when you consider the number of parameters components in our system have to pass between each other. As such, instead of passing a series of parameters and returning tuples (that are uneditable unless unpacked), we've defined a series of custom types to keep our codebase clean and maintainable. Their attributes and relations are as depicted in the following UML. You'll notice, seeing that Python's objects don't have public/private/protected restrictions on attributes and methods, such restrictions are not denoted.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/UML_utils.png}
+    \caption{Custom Types UML (\cite{visual-paradigm})}
+    \label{fig:custom-types-uml}
+\end{figure}
+
+
+\subsection{Natural Language Processing (NLP)} \label{nlp-design}
+
+\subsubsection{Custom Named Entity Ruler (NER)} \label{named-entity-ruler-design}
+
+In addition to SpaCy's (\cite{spacy}) pre trained pipeline, we've injected our custom NER, into SpaCy's CNN/CPU pipeline, before it's default one, so our custom component can derive the tokens it needs, without interference. Our custom NER primarily involves a pattern set, to match station alpha3 codes to their names in natural language.
+
+Using SpaCy's 
+
+
+\subsubsection{Dialogue Flow Engine} \label{dialogue-flow-design}
+
+We've implemented a state machine, to control the flow of conversation, dependant on it's current state compared to the data derived from tokenisation.
+
+
+\subsection{Webscraping} \label{webscraping-design}
+
+
+\subsection{Delay Prediction} \label{delay-prediction-design}
+
+
+\subsection{User Interface} \label{user-interface-design}
+
+
+
+% \subsubsectino()
  
-\subsection{The Architecture of the chatbot} \label{architecture}
-% You may draw a functional diagram if you like.  
-
-% You can describe your design for each key module or component of your chatbot, in a subsection. E.g. 
-\subsection{User Interface} \label{user-interface}
-
-\subsection{Webscraping} \label{webscraping}
-
-% conversion of input natural language, to processable tokens
-\subsection{Natural Language Processing (NLP)} \label{nlp}
-
-% manipulation of historical tokenized data
-\subsection{Knowledgebase} \label{knowledgebase}
-
-% dialogue manager, state machine
-\subsection{Inferring Engine} \label{inference-engine}
-
-% knn, K nearest neighbour, regressor, aligns to best fit
-\subsection{Delay Prediction Models} \label{delay-prediction}
-
-\subsection{Conversation Control} \label{conversation-control}
+% \subsection{The Architecture of the chatbot} \label{architecture}
+% % You may draw a functional diagram if you like.  
+% 
+% % You can describe your design for each key module or component of your chatbot, in a subsection. E.g. 
+% \subsection{User Interface} \label{user-interface}
+% 
+% \subsection{Webscraping} \label{webscraping}
+% 
+% % conversion of input natural language, to processable tokens
+% \subsection{Natural Language Processing (NLP)} \label{nlp}
+% 
+% % manipulation of historical tokenized data
+% \subsection{Knowledgebase} \label{knowledgebase}
+% 
+% % dialogue manager, state machine
+% \subsection{Inferring Engine} \label{inference-engine}
+% 
+% % knn, K nearest neighbour, regressor, aligns to best fit
+% \subsection{Delay Prediction Models} \label{delay-prediction}
+% 
+% \subsection{Conversation Control} \label{conversation-control}
 
 %\begin{table}
 %\centering
