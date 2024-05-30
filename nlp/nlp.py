@@ -58,7 +58,13 @@ def create_entity_ruler(nlp, patterns):
     ruler.add_patterns(longname_patterns_no_rail_station)
     ruler.add_patterns(name_patterns)
 
-
+def recognise_chosen_service(doc):
+    for token in doc:
+        if token.text.lower() == 'delay':
+            return 'delay'
+        elif token.text.lower() == 'ticket':
+            return 'prediction'
+    return None
 def recognise_station_directions(doc, user_enquiry):
     for token in doc:
         if token.text in ['to', 'from'] and token.i < len(doc) - 1:

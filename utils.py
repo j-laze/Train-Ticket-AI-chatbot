@@ -54,6 +54,41 @@ class Enquiry:
     def __str__(self):
         return f"Enquiry(start_alpha3={self.start_alpha3}, end_alpha3={self.end_alpha3}, journey_type={self.journey_type}, out_time={self.out_time}, ret_time={self.ret_time}, out_date={self.out_date}, ret_date={self.ret_date}, out_time_condition={self.out_time_condition}, ret_time_condition={self.ret_time_condition}, adults={self.adults}, children={self.children}, railcard={self.railcard})"
 
+
+class DelayPrediction:
+        def __init__(
+                self,
+                station: str = None,                       ## the station code
+                day_of_week: int = None,                   ## the day of the week
+                month: int = None,                         ## the month
+                actual_departure: int = None,              ## the actual departure time
+                departure_difference: int = None,          ## the difference between the actual and planned departure times
+                planned_departure: int = None,             ## the planned departure time
+                actual_arrival: int = None,                ## the actual arrival time
+                london_leave_time: int = None,             ## the time the train leaves london
+                london_planned_time: int = None,           ## the planned time the train leaves london
+                london_leave_difference: int = None,
+                norwich_planned_time: int = None,
+                norwich_arrival_time: int = None,
+                norwich_arrival_difference: int = None
+        ):
+            self.station = station
+            self.day_of_week = day_of_week
+            self.month = month
+            self.actual_departure = actual_departure
+            self.departure_difference = departure_difference
+            self.planned_departure = planned_departure
+            self.actual_arrival = actual_arrival
+            self.london_leave_time = london_leave_time
+            self.london_planned_time = london_planned_time
+            self.london_leave_difference = london_leave_difference
+            self.norwich_planned_time = norwich_planned_time
+            self.norwich_arrival_time = norwich_arrival_time
+            self.norwich_arrival_difference = norwich_arrival_difference
+
+        def __str__(self):
+            return f"DelayPrediction(station={self.station}, day_of_week={self.day_of_week}, month={self.month}, actual_departure={self.actual_departure}, departure_difference={self.departure_difference}, planned_departure={self.planned_departure}, actual_arrival={self.actual_arrival}, london_leave_time={self.london_leave_time}, london_planned_time={self.london_planned_time}, london_leave_difference={self.london_leave_difference}, norwich_planned_time={self.norwich_planned_time}, norwich_arrival_time={self.norwich_arrival_time}, norwich_arrival_difference={self.norwich_arrival_difference})"
+
 class Journey:
 
     def __init__(
