@@ -1,16 +1,19 @@
 from utils import Enquiry
 from nlp.nlp import recognise_station_directions, recognise_times, recognise_dates, recognise_station, \
-    print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens, fmt_natlang_time,\
-    recognise_chosen_service
+    print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens, fmt_natlang_time, \
+    recognise_chosen_service, recognise_station_pred, time_to_minutes, minutes_to_time
 import sys
+import datetime
 
 from webscrape.splitmyfare import get_journeys
 from utils import JourneyType, TimeCondition, Railcard
 from utils import Enquiry, Journey, DelayPrediction
-
+from utils import knn, le, scaler
+from models.getPredictionKnn import make_prediction
 
 class DialogueFlowEngine:
     def __init__(self, nlp, station_df):
+        self.service = None
         self.nlp = nlp
         self.station_df = station_df
         self.user_enquiry = Enquiry()
@@ -123,6 +126,7 @@ class DialogueFlowEngine:
     def handle_end_location(self, doc):
         self.user_enquiry.end_alpha3 = recognise_station(doc)
         self.state = self.dialogue_flow[self.state]['next_state']
+
     def end_location_check(self):
         return self.user_enquiry.end_alpha3 is not None
 
@@ -133,13 +137,12 @@ class DialogueFlowEngine:
     def journey_type_check(self):
         return self.user_enquiry.journey_type is not None
 
-
     def handle_out_date_time(self, doc):
         recognise_dates(doc, self.user_enquiry)
         recognise_times(doc, self.user_enquiry)
         self.state = self.dialogue_flow[self.state]['next_state']
 
-    def out_date_time_check(self):    # check
+    def out_date_time_check(self):  # check
         return self.user_enquiry.out_date or self.user_enquiry.out_time
 
     def handle_out_time_constraint(self, doc):
@@ -148,7 +151,6 @@ class DialogueFlowEngine:
 
     def out_time_constraint_check(self):
         return self.user_enquiry.out_time_condition
-
 
     def handle_passengers(self, doc):
         for i in range(1, len(doc)):
@@ -165,13 +167,24 @@ class DialogueFlowEngine:
     def passengers_check(self):
         return self.user_enquiry.adults or self.user_enquiry.children
 
-
     def completion_prediction(self):
-        self.prediction_enquiry.norwich_planned_time = fmt_natlang_time(self.prediction_enquiry.norwich_planned_time)
-        self.prediction_enquiry.london_leave_time = fmt_natlang_time(self.prediction_enquiry.london_leave_time)
-        print("completed prediction: ", self.prediction_enquiry)
-        self.state = 'EXIT'
+       # print("completed prediction enquiry: ", self.prediction_enquiry)
+        self.prediction_enquiry.london_leave_time = time_to_minutes(self.prediction_enquiry.london_leave_time)
+        self.prediction_enquiry.norwich_planned_time = time_to_minutes(self.prediction_enquiry.norwich_planned_time)
+        self.prediction_enquiry.planned_departure = time_to_minutes(self.prediction_enquiry.planned_departure)
+        self.prediction_enquiry.actual_departure = self.prediction_enquiry.planned_departure + self.prediction_enquiry.departure_difference
+        #print(self.prediction_enquiry)
+        prediction = make_prediction(knn,le, scaler, self.prediction_enquiry)
+        print(prediction)
+        rounded_prediction = round(prediction[0])
+        print(rounded_prediction)
+        self.prediction_enquiry.norwich_arrival_time = self.prediction_enquiry.norwich_planned_time + rounded_prediction
+        message = f"Your train is expected to arrive at Norwich at {minutes_to_time(self.prediction_enquiry.norwich_arrival_time)}"
 
+        yield message
+
+
+       #self.state = 'EXIT'
 
     def completion(self):
         user_input = input("Thank you for providing your journey details, are they correct?")
@@ -197,23 +210,17 @@ class DialogueFlowEngine:
             print()
 
             demo_enquiry = Enquiry(
-                start_alpha3        = self.user_enquiry.start_alpha3,
-                end_alpha3          = self.user_enquiry.end_alpha3,
-                journey_type        = JourneyType.SINGLE,
-                out_time_condition  = TimeCondition.DEPART_AFTER,
-                out_time            = fmt_natlang_time(self.user_enquiry.out_time),
-                out_date            = "2024-05-10",
-                adults              = self.user_enquiry.adults,
-                children            = 0 if self.user_enquiry.children is None else self.user_enquiry.children,
+                start_alpha3=self.user_enquiry.start_alpha3,
+                end_alpha3=self.user_enquiry.end_alpha3,
+                journey_type=JourneyType.SINGLE,
+                out_time_condition=TimeCondition.DEPART_AFTER,
+                out_time=fmt_natlang_time(self.user_enquiry.out_time),
+                out_date="2024-05-10",
+                adults=self.user_enquiry.adults,
+                children=0 if self.user_enquiry.children is None else self.user_enquiry.children,
             )
 
             priced_journeys = get_journeys(demo_enquiry)
-
-
-
-
-
-
 
     def handle_return_time_constraint(self, doc):
         if self.user_enquiry.journey_type == 'RETURN':
@@ -221,7 +228,6 @@ class DialogueFlowEngine:
         elif self.user_enquiry.journey_type == 'RETURN':
             self.state = 'ASKING_RETURN_DATE_TIME'
         self.state = self.dialogue_flow[self.state]['next_state']
-
 
     def handle_return_date_time(self, doc):
         recognise_dates(doc, self.user_enquiry)
@@ -233,23 +239,26 @@ class DialogueFlowEngine:
             self.state = 'ASKING_RETURN_DATE_TIME'
         self.state = self.dialogue_flow[self.state]['next_state']
 
-
-            # TODO add a check to see if the station is in the station_df
+        # TODO add a check to see if the station is in the station_df
 
     def handle_pred_station(self, doc):
-        self.prediction_enquiry.station = recognise_station(doc)
-        self.state = self.dialogue_flow[self.state]['next_state']
-
+        self.prediction_enquiry.station = recognise_station_pred(doc)
+        if not self.prediction_enquiry.station:
+            self.state = 'ASKING_PREDICTION_STATION'
+        else:
+            self.state = self.dialogue_flow[self.state]['next_state']
 
     def handle_pred_delay(self, doc):
         for token in doc:
             if token.ent_type_ == 'CARDINAL':
-                print(token.text)
-                self.prediction_enquiry.departure_difference = token.text
-                print(self.prediction_enquiry.departure_difference)
+                self.prediction_enquiry.departure_difference = int(token.text)
+                self.prediction_enquiry.planned_departure = datetime.datetime.now().strftime("%H:%M")
+                self.prediction_enquiry.day_of_week = datetime.datetime.now().weekday()
+                self.prediction_enquiry.month = datetime.datetime.now().month
         if not self.prediction_enquiry.departure_difference:
             self.state = 'ASKING_PREDICTION_DELAY'
-        else: self.state = self.dialogue_flow[self.state]['next_state']
+        else:
+            self.state = self.dialogue_flow[self.state]['next_state']
 
     def pred_delay_check(self):
         return self.prediction_enquiry.departure_difference is not None
@@ -257,9 +266,11 @@ class DialogueFlowEngine:
     def handle_pred_london_leave_time(self, doc):
         for token in doc.ents:
             if token.label_ == 'TIME':
-                print(token.text)
-                self.prediction_enquiry.london_leave_time = token.text
-        self.state = self.dialogue_flow[self.state]['next_state']
+                self.prediction_enquiry.london_leave_time = fmt_natlang_time(token.text)
+                if self.prediction_enquiry.london_leave_time:
+                    self.state = self.dialogue_flow[self.state]['next_state']
+            else:
+                self.state = 'ASKING_PREDICTION_LONDON_LEAVE_TIME'
 
     def pred_london_leave_time_check(self):
         return self.prediction_enquiry.london_leave_time is not None
@@ -267,41 +278,34 @@ class DialogueFlowEngine:
     def handle_pred_norwich_planned_time(self, doc):
         for token in doc.ents:
             if token.label_ == 'TIME':
-                print(token.text)
-                self.prediction_enquiry.norwich_planned_time = token.text
-        self.state = self.dialogue_flow[self.state]['next_state']
+                self.prediction_enquiry.norwich_planned_time = fmt_natlang_time(token.text)
+                if self.prediction_enquiry.norwich_planned_time:
+                    self.state = self.dialogue_flow[self.state]['next_state']
+            else:
+                self.state = self.dialogue_flow[self.state]['ASKING_PREDICTION_NORWICH_PLANNED_TIME']
 
     def pred_norwich_planned_time_check(self):
         return self.prediction_enquiry.norwich_planned_time is not None
 
-
-
     def pred_station_check(self):
         return self.prediction_enquiry.station is not None
-
 
     def handle_asking_service(self, doc):
         if recognise_chosen_service(doc) == 'ticket':
             self.state = 'ASKING_JOURNEY_DETAILS'
-        else:
+        elif recognise_chosen_service(doc) == 'delay':
             self.state = self.dialogue_flow[self.state]['next_state']
-
-
-
-
-
+        else:
+            self.state = 'ASKING_SERVICE'
 
     def journey_type_check(self):
         return self.user_enquiry.journey_type is not None
-
-
 
     def process_input(self, user_input):
         doc = self.nlp(user_input)
         handler_method = self.dialogue_flow[self.state]['method']
         if handler_method:
             handler_method(doc)
-
 
     def ask_question(self, question):
         handler_check = self.dialogue_flow[self.state]['check']
@@ -312,66 +316,71 @@ class DialogueFlowEngine:
         if user_input.lower() == 'exit':
             sys.exit()
         self.process_input(user_input)
-       # print(self.user_enquiry)
+        # print(self.user_enquiry)
         print()
 
     def ask_service_check(self):
-        return None
+        return self.service is not None
 
     def run(self):
         if self.state == 'ASKING_SERVICE':
-           yield from self.ask_question("Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
+            yield from self.ask_question(
+                "Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
 
         while True:
-            if self.state =='ASKING_PREDICTION_STATION':
-              yield from self.ask_question("Please provide me the current station where you are located")
+            if self.state == 'ASKING_PREDICTION_STATION':
+                yield from self.ask_question("Please provide me the current station where you are located")
 
             elif self.state == 'ASKING_PREDICTION_DELAY':
-             yield from self.ask_question("Please tell me your current delay time at your station")
+                yield from self.ask_question("Please tell me your current delay time at your station")
 
             elif self.state == 'ASKING_PREDICTION_LONDON_LEAVE_TIME':
-              yield from self.ask_question("Please tell me the time you left London")
+                yield from self.ask_question("Please tell me the time you left London")
 
             elif self.state == 'ASKING_PREDICTION_NORWICH_PLANNED_TIME':
-              yield from self.ask_question("Please tell me the time your meant to arrive at norwich")
+                yield from self.ask_question("Please tell me the time your meant to arrive at norwich")
 
             elif self.state == 'ASKING_JOURNEY_DETAILS':
-               yield from self.ask_question(
+                yield from self.ask_question(
                     "Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
             elif self.state == 'ASKING_START_LOCATION':
-              yield from  self.ask_question("Where are you travelling from? ")
+                yield from self.ask_question("Where are you travelling from? ")
 
             elif self.state == 'ASKING_END_LOCATION':
-              yield from self.ask_question(f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
+                yield from self.ask_question(
+                    f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
 
             elif self.state == 'ASKING_JOURNEY_TYPE':
-              yield from self.ask_question("Are you looking for a single or return ticket? ")
+                yield from self.ask_question("Are you looking for a single or return ticket? ")
 
             elif self.state == 'ASKING_OUTGOING_TIME_CONSTRAINT':
-               yield from self.ask_question(f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
+                yield from self.ask_question(
+                    f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
 
             elif self.state == 'ASKING_OUTGOING_DATE_TIME':
-              yield from  self.ask_question("What time would you like to travel at ? ")
+                yield from self.ask_question("What time would you like to travel at ? ")
 
             elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
-               yield from self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
+                yield from self.ask_question(
+                    "Do you want to depart at or arrive by a certain time for your return journey? ")
 
             elif self.state == 'ASKING_RETURN_DATE_TIME':
-              yield from  self.ask_question("What's your return date and time? ")
+                yield from self.ask_question("What's your return date and time? ")
 
             elif self.state == 'ASKING_PASSENGERS':
-               yield from self.ask_question(f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
+                yield from self.ask_question(
+                    f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
 
             elif self.state == 'ASKING_RAILCARD':
-              yield from self.ask_question("Do you have a railcard? ")
+                yield from self.ask_question("Do you have a railcard? ")
 
 
             elif self.state == 'COMPLETED_PREDICTION':
-               yield from self.completion_prediction()
+                yield from self.completion_prediction()
 
 
             elif self.state == 'COMPLETED':
-              yield from  self.completion()
+                yield from self.completion()
 
             elif self.state == 'EXIT':
                 break;
