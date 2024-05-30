@@ -318,8 +318,6 @@ class DialogueFlowEngine:
     def ask_service_check(self):
         return None
 
-
-
     def run(self):
         if self.state == 'ASKING_SERVICE':
            yield from self.ask_question("Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
@@ -329,51 +327,51 @@ class DialogueFlowEngine:
               yield from self.ask_question("Please provide me the current station where you are located")
 
             elif self.state == 'ASKING_PREDICTION_DELAY':
-               yield self.ask_question("Please tell me your current delay time at your station")
+             yield from self.ask_question("Please tell me your current delay time at your station")
 
             elif self.state == 'ASKING_PREDICTION_LONDON_LEAVE_TIME':
-              yield  self.ask_question("Please tell me the time you left London")
+              yield from self.ask_question("Please tell me the time you left London")
 
             elif self.state == 'ASKING_PREDICTION_NORWICH_PLANNED_TIME':
-              yield  self.ask_question("Please tell me the time your meant to arrive at norwich")
+              yield from self.ask_question("Please tell me the time your meant to arrive at norwich")
 
             elif self.state == 'ASKING_JOURNEY_DETAILS':
-               yield self.ask_question(
+               yield from self.ask_question(
                     "Hi ! i am a bot which can help you find cheapest tickets for your train journey ! please tell me your journey details: ")
             elif self.state == 'ASKING_START_LOCATION':
-              yield  self.ask_question("Where are you travelling from? ")
+              yield from  self.ask_question("Where are you travelling from? ")
 
             elif self.state == 'ASKING_END_LOCATION':
-              yield  self.ask_question(f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
+              yield from self.ask_question(f"I see you travelling from {self.user_enquiry.start_alpha3}. Where are you travelling to? ")
 
             elif self.state == 'ASKING_JOURNEY_TYPE':
-              yield  self.ask_question("Are you looking for a single or return ticket? ")
+              yield from self.ask_question("Are you looking for a single or return ticket? ")
 
             elif self.state == 'ASKING_OUTGOING_TIME_CONSTRAINT':
-               yield self.ask_question(f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
+               yield from self.ask_question(f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
 
             elif self.state == 'ASKING_OUTGOING_DATE_TIME':
-              yield  self.ask_question("What time would you like to travel at ? ")
+              yield from  self.ask_question("What time would you like to travel at ? ")
 
             elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
-               yield self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
+               yield from self.ask_question("Do you want to depart at or arrive by a certain time for your return journey? ")
 
             elif self.state == 'ASKING_RETURN_DATE_TIME':
-              yield  self.ask_question("What's your return date and time? ")
+              yield from  self.ask_question("What's your return date and time? ")
 
             elif self.state == 'ASKING_PASSENGERS':
-               yield self.ask_question(f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
+               yield from self.ask_question(f"How many adult and child tickets would you like to {self.user_enquiry.end_alpha3} ? ")
 
             elif self.state == 'ASKING_RAILCARD':
-              yield  self.ask_question("Do you have a railcard? ")
+              yield from self.ask_question("Do you have a railcard? ")
 
 
             elif self.state == 'COMPLETED_PREDICTION':
-               yield self.completion_prediction()
+               yield from self.completion_prediction()
 
 
             elif self.state == 'COMPLETED':
-              yield  self.completion()
+              yield from  self.completion()
 
             elif self.state == 'EXIT':
                 break;

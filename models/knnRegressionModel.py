@@ -36,7 +36,7 @@ def create_and_train_knn(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    neighbors = list(range(8, 12, 2))
+    neighbors = list(range(5, 12, 2))
 
     cv_scores = []
 
@@ -60,21 +60,23 @@ def create_and_train_knn(df):
     y_test_pred = knn.predict(X_test)
 
     plt.scatter(y_train, y_train_pred, color='blue', label='Train data')
-
     plt.scatter(y_test, y_test_pred, color='red', label='Test data')
 
+    plt.title('Actual vs Predicted Values')
     plt.xlabel('Actual Values')
     plt.ylabel('Predicted Values')
 
-    plt.legend()
+    # Add more information to the legend
+    train_rmse = np.sqrt(mean_squared_error(y_train, y_train_pred))
+    test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+    plt.legend([f'Train data (RMSE: {train_rmse:.2f})', f'Test data (RMSE: {test_rmse:.2f})'])
 
     plt.show()
 
     y_pred = knn.predict(X_test)
-
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
 
-    print('Root Mean Squared Error:', rmse)
+    print('Root Mean Squared Error for Test Data:', rmse)
 
     return knn, le, scaler

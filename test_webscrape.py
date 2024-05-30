@@ -13,6 +13,7 @@ valid_out_date      = tomorrow.strftime("%Y-%m-%d")
 valid_ret_time      = "20:00"
 valid_ret_date      = (tomorrow + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
+
 ## NOTE: bank holidays and train strikes may affect the validity of these tests
 
 valid_enquiry_tuplist_desc_obj_url = [

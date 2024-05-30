@@ -17,7 +17,7 @@ from utils import Enquiry, Journey
 def get_search_url(enquiry: Enquiry) -> str:
 
     ## get the raw text from the link
-    station_code_js_url = "https://book.splitmyfare.co.uk/static/js/57.80112f8e.chunk.js"
+    station_code_js_url = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chunk.js"
     station_code_js = requests.get(station_code_js_url)
 
     ## verify the station_js request was successful
