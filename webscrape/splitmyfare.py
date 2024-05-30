@@ -119,10 +119,11 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     button = wait_xpath_ret(SEARCH_AGAIN_XPATH, 5)
     button.click()
 
-    price_journey_tuplist = []
-
     ## outbound journeys
     i = 0
+    price_floats = []
+    price_strings = []
+    journeys = []
     while True:
         
         container_div_xpath, time_span_xpath, price_container_div_xpath = get_xpaths_to_scrape(i)
@@ -142,33 +143,22 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         price_container_div = wait_xpath_ret(price_container_div_xpath)
         price_str = re.search(r"£(\d+\.\d{2})", price_container_div.get_attribute("innerHTML")).group(1)
 
-        ## add price and journey to list
-        price_journey_tuplist.append(( price_str, Journey( start_alpha3 = enquiry.start_alpha3,
-                                                           end_alpha3 = enquiry.end_alpha3,
-                                                           journey_type = enquiry.journey_type,
-                                                           out_depart_time = depart_time_str,
-                                                           out_arrive_time = arrive_time_str,  ) ))
+        price_strings.append(price_str)
+        price_floats.append(float(price_str))
+
+        journeys.append(Journey( start_alpha3 = enquiry.start_alpha3,
+                                 end_alpha3 = enquiry.end_alpha3,
+                                 journey_type = enquiry.journey_type,
+                                 out_depart_time = depart_time_str,
+                                 out_arrive_time = arrive_time_str, ))
         i+=1
     i-=1
 
-    if not price_journey_tuplist:
+    if not price_strings:
         print("No journeys found")
+        return []
 
-    cheapest_float = 99999
-    cheapest_string = ""
-    print_strings = []
-    for _, (price_str, journey) in enumerate(price_journey_tuplist):
-        j_str = f"£{price_str}, {journey.out_depart_time}-{journey.out_arrive_time}"
-        if enquiry.journey_type == JourneyType.RETURN:
-            j_str += f", {journey.ret_depart_time}-{journey.ret_arrive_time}"
-        print_strings.append(j_str)
-        price_float = float(re.sub(r"[^0-9.]", "", price_str))
-        if price_float < cheapest_float:
-            cheapest_float = price_float
-            cheapest_string = f"{j_str} <- Cheapest"
-    print(url) 
-    print(cheapest_string)
-    for num, string in enumerate(print_strings):
-        print(f"{num+1} -> {string}")
+    price_strings[price_floats.index(min(price_floats))] += " <- Cheapest"
+    price_strings = ["£"+s for s in price_strings]
 
-    return price_journey_tuplist
+    return list(zip(price_strings, journeys))
