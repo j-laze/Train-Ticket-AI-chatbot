@@ -43,6 +43,7 @@ def get_xpaths_to_scrape(i: int) -> tuple[str, str]:
     price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
     return container_div_xpath, time_span_xpath, price_container_div_xpath
 
+get_price_str = lambda div: re.search(r"£(\d+\.\d{2})", div.get_attribute("innerHTML")).group(1)
 
 
 def get_search_url(enquiry: Enquiry) -> str:
@@ -106,10 +107,8 @@ def get_search_url(enquiry: Enquiry) -> str:
 
 def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
-    ## create driver, navigate to url deciphered from enquiry
     init_driver()
-    url = get_search_url(enquiry)
-    driver.get(url)
+    driver.get(get_search_url(enquiry))
 
     ## you must be a bot... click the button to prove you're not!
     button = wait_xpath_ret(SOMETHING_WRONG_XPATH, 5)
@@ -128,21 +127,14 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         
         container_div_xpath, time_span_xpath, price_container_div_xpath = get_xpaths_to_scrape(i)
 
-        ## break if no more journeys found
-        try: wait_xpath_ret(container_div_xpath)
+        try: wait_xpath_ret(container_div_xpath)    ## break if no more journeys found
         except: break
 
-        ## get departure and arrival times using substring of time span element text
-        # NOTE: first and last 5 characters of text are departure and arrival times respectively
-        time_span = wait_xpath_ret(time_span_xpath)
+        time_span = wait_xpath_ret(time_span_xpath) ## first and last 5 characters are dept and arrival times
         depart_time_str = time_span.text[:5]
         arrive_time_str = time_span.text[-5:]
 
-        ## get the price from the price container div using regex on the innerHTML of the price container div
-        # NOTE: uses innerHTML because the cheapest price has another div inside the price container div
-        price_container_div = wait_xpath_ret(price_container_div_xpath)
-        price_str = re.search(r"£(\d+\.\d{2})", price_container_div.get_attribute("innerHTML")).group(1)
-
+        price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
         price_strings.append(price_str)
         price_floats.append(float(price_str))
 
@@ -152,7 +144,6 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
                                  out_depart_time = depart_time_str,
                                  out_arrive_time = arrive_time_str, ))
         i+=1
-    i-=1
 
     if not price_strings:
         print("No journeys found")
@@ -162,3 +153,5 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     price_strings = ["£"+s for s in price_strings]
 
     return list(zip(price_strings, journeys))
+
+
