@@ -95,7 +95,8 @@ class App(CTk):
         self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
         self.entry.bind("<Return>", self.send_user_msg)
         self.entry.pack(padx=PADX, pady=PADY)
-        
+
+         
         self.send_bot_msg("INITIAL PROMPT")
         
     def waiting_for_user(self):
