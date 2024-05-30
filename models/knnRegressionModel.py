@@ -22,9 +22,7 @@ def create_and_train_knn(df):
         'departure_difference',
         'planned_departure',
         'london_leave_time',
-        'london_planned_time',
         'norwich_planned_time',
-        'london_leave_difference'
     ]
     X = df[columns_to_train]
     y = df['norwich_arrival_difference']
@@ -36,7 +34,7 @@ def create_and_train_knn(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    neighbors = list(range(5, 12, 2))
+    neighbors = list(range(53, 55, 1))
 
     cv_scores = []
 
