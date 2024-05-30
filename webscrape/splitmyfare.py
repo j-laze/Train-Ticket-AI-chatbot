@@ -112,6 +112,7 @@ def get_search_url(enquiry: Enquiry) -> str:
 
 def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
+    ## initialise the driver, get and open the search url
     init_driver()
     url = get_search_url(enquiry)
     print(url)
@@ -125,7 +126,7 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     button = wait_xpath_ret(SEARCH_AGAIN_XPATH, 5)
     button.click()
 
-    ## outbound journeys
+    ## scrape journeys
     i = 0
     price_floats = []
     price_strings = []
@@ -140,16 +141,19 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         try: container_div = wait_xpath_ret(container_div_xpath)
         except: break
 
+        ## create journey object
+        jrny = Journey( start_alpha3 = enquiry.start_alpha3,
+                        end_alpha3   = enquiry.end_alpha3,
+                        journey_type = enquiry.journey_type )
+
         ## scrape outbound depature and arrival times, init inbound times
         time_span = wait_xpath_ret(time_span_xpath)
-        out_depart_time_str, out_arrive_time_str = get_time_strs(time_span)
-        ret_depart_time_str = None
-        ret_arrive_time_str = None
+        jrny.out_depart_time, jrny.out_arrive_time = get_time_strs(time_span)
         
         ## scrape fixed ticket price
-        price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
-        price_strings.append(price_str)
-        price_floats.append(float(price_str))
+        jrny.price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
+        price_strings.append(jrny.price_str)
+        price_floats.append(float(jrny.price_str))
         
         ## get return times
         if enquiry.journey_type == JourneyType.RETURN:
@@ -164,20 +168,14 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
                 
                 ## if the price matches the outbound price, scrape and add return times to journey object
                 price_container_div = opt_div.find_element(By.XPATH, price_container_div_xpath)
-                if get_price_str(price_container_div) == price_str:
+                if get_price_str(price_container_div) == jrny.price_str:
                     time_span = opt_div.find_element(By.XPATH, time_span_xpath)
 
                     ## scrape return times and update journey object
-                    ret_depart_time_str, ret_arrive_time_str = get_time_strs(time_span)
+                    jrny.ret_depart_time, jrny.ret_arrive_time = get_time_strs(time_span)
 
-        ## create and append journey object
-        journeys.append(Journey( start_alpha3 = enquiry.start_alpha3,
-                                 end_alpha3 = enquiry.end_alpha3,
-                                 journey_type = enquiry.journey_type,
-                                 out_depart_time = out_depart_time_str,
-                                 out_arrive_time = out_arrive_time_str, 
-                                 ret_depart_time = ret_depart_time_str,
-                                 ret_arrive_time = ret_arrive_time_str ))
+        ## append the journey object
+        journeys.append(jrny)
         i+=1
 
     ## return empty list if no journeys found
