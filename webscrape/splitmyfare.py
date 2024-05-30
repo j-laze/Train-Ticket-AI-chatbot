@@ -38,15 +38,16 @@ def init_driver():
 def wait_xpath_ret(xpath, timeout=3):
     return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
-def out_xpaths_to_scrape(i: int) -> tuple[str, str]:
-    container_div_xpath       = f"{OUTBOUND_CONTAINER_DIV_XPATH}/div[{i+2}]"
+def xpaths_to_scrape(bound_container_div_xpath: str, i: int) -> tuple[str, str]:
+    if bound_container_div_xpath == INBOUND_CONTAINER_DIV_XPATH:
+        i -= 1
+    container_div_xpath       = f"{bound_container_div_xpath}/div[{i+2}]"
     time_span_xpath           = f"{container_div_xpath}/div[1]/div[2]/div/span"
     price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
     return container_div_xpath, time_span_xpath, price_container_div_xpath
 
 get_price_str = lambda div: re.search(r"£(\d+\.\d{2})", div.get_attribute("innerHTML")).group(1)
 
-get_ret_opt_price_xpath = lambda j: f"{INBOUND_CONTAINER_DIV_XPATH}/div[{j+1}]/div[2]/div[1]"
 
 def get_search_url(enquiry: Enquiry) -> str:
 
@@ -130,7 +131,8 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     while True:
         
         ## get outbound journey data xpaths
-        container_div_xpath, time_span_xpath, price_container_div_xpath = out_xpaths_to_scrape(i)
+        container_div_xpath, time_span_xpath, price_container_div_xpath \
+          = xpaths_to_scrape(OUTBOUND_CONTAINER_DIV_XPATH, i)
 
         ## exit loop if no more journeys found
         try: container_div = wait_xpath_ret(container_div_xpath)
@@ -153,12 +155,20 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
             driver.execute_script("arguments[0].scrollIntoView();", container_div)
             container_div.click()
             return_option_divs = driver.find_elements(By.XPATH, INBOUND_CONTAINER_DIV_XPATH+"/div")
+            
+            ## for each option
             for j, opt_div in enumerate(return_option_divs):
-                price_container_div = opt_div.find_element(By.XPATH, get_ret_opt_price_xpath(j))
+                _, time_span_xpath, price_container_div_xpath \
+                  = xpaths_to_scrape(INBOUND_CONTAINER_DIV_XPATH, j)
+                
+                ## if the price matches the outbound price...
+                price_container_div = opt_div.find_element(By.XPATH, price_container_div_xpath)
                 if get_price_str(price_container_div) == price_str:
-                    print(price_str)
-                # print("!!!", get_price_str(price_container_div), "!!!")
-            # if len()
+                    time_span = opt_div.find_element(By.XPATH, time_span_xpath)
+
+                    ## scrape return times and update journey object
+                    ret_depart_time_str = time_span.text[:5]
+                    ret_arrive_time_str = time_span.text[-5:]
 
         ## create and append journey object
         journeys.append(Journey( start_alpha3 = enquiry.start_alpha3,
@@ -179,8 +189,7 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     price_strings[price_floats.index(min(price_floats))] += " <- Cheapest"
     price_strings = ["£"+s for s in price_strings]
 
-    
-
+    ## return zipped prices and journeys
     return list(zip(price_strings, journeys))
 
 
