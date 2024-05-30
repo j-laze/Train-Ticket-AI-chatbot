@@ -71,18 +71,24 @@ def main():
         return f"{hours:02d}:{minutes:02d}"
     
     
-    
-
-    #data2 = processData.readTrainData()
 
     nlp = spacy.load('en_core_web_sm')
     station_df = read_csv_to_df()
 
     patterns = create_patterns(station_df)
     create_entity_ruler(nlp, patterns)
+
     engine = DialogueFlowEngine(nlp, station_df)
 
-    engine.loop()
+    run_generator = engine.run() 
+    question = next(run_generator)  
+    print(question)
+
+    user_response = "delay"  
+
+    next_question = run_generator.send(user_response)  
+    print(next_question)
+    
     
 
 
