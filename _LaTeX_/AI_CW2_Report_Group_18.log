@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.28)  30 MAY 2024 05:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.28)  30 MAY 2024 08:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -546,10 +546,10 @@ Package pdftex.def Info: images/UML_utils.png  used on input line 275.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[6] (AI_CW2_Report_Group_18.bbl
+[6] [7 <./images/UML_utils.png>] (AI_CW2_Report_Group_18.bbl
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 5.
- [7 <./images/UML_utils.png>] [8]) [9] (AI_CW2_Report_Group_18.aux)
+ [8]) [9] (AI_CW2_Report_Group_18.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-05-08>
@@ -570,9 +570,9 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  99i,7n,107p,1290b,793s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\James\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/James/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on AI_CW2_Report_Group_18.pdf (9 pages, 229127 bytes).
+Output written on AI_CW2_Report_Group_18.pdf (9 pages, 231633 bytes).
 PDF statistics:
- 460 PDF objects out of 1000 (max. 8388607)
+ 467 PDF objects out of 1000 (max. 8388607)
  89 named destinations out of 1000 (max. 500000)
  402 words of extra memory for PDF output out of 10000 (max. 10000000)
 

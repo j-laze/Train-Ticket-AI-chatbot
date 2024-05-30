@@ -268,7 +268,7 @@ You'll notice, seeing that Python's objects don't have public/private/protected 
 
 \subsection{Custom Types} \label{custom-types}
 
-As powerful as Python's (\cite{python}) dynamic typing is, it can be a double edged sword. Especially when you consider the number of parameters components in our system have to pass between each other. As such, instead of passing a series of parameters and returning tuples (that are uneditable unless unpacked), we've defined a series of custom types to keep our codebase clean and maintainable. Their attributes and relations are as depicted in the following UML.
+As powerful as Python's (\cite{python}) dynamic typing is, it can be a double edged sword. Especially when you consider the number of parameters components in our system have to pass between each other. As such, instead of passing a series of parameters and returning tuples (that are uneditable unless unpacked), we've defined a series of custom types to keep our codebase clean and maintainable. Though included in the encompassing diagram, for the sake of understanding the following sections, they're depicted in the following UML.
 
 \begin{figure}[h]
     \centering
@@ -292,12 +292,15 @@ Using SpaCy's
 
 The purpose of the dialogue flow engine, is to control the flow of conversation between the user and the chatbot, whilst interfacing with the NPL to derive consistently formatted data.
 
-We've implemented it a state machine, dependant on it's current state compared to the data derived with the NPL. It has a default starting state, questioning the user to retrieve as much information as viably possible from the first prompt, after which, consequent states question the user to provide information for the remaining parameters, until the sufficient data is acquired to reach a completion state, from which point, it passes a curated Enquiry object (section\ref{custom-types}) over to the webscraping module.
+We've implemented it a state machine, dependant on it's current state compared to the data derived with the NPL. It has a default starting state, asking whether the user is looking to acquire tickets, or enquire about a delay prediction of an in-transit LondonLP <-> Norwich journey.
 
+If the user is looking to acquire tickets, the subsequent prompt attempts to retrieve as much information as viably possible from one chat exchange, after which, consequent states question the user to provide information for the remaining parameters, until the sufficient data is acquired to reach a completion state. From which point, it passes a curated Enquiry object (section\ref{custom-types}) over to the webscraping module.
 
+As for delay prediction enquiries, they'll be sequentially prompted to provide the current/previous station, delay prediction from the service provider, and the tickets original departure and arrival times. Once all the data is extracted from the user, the engine reaches a completion state, and the curated DelayPrediction object (section\ref{custom-types}) is passed to the KNN regressor.
 
 \subsection{Webscraping} \label{webscraping-design}
 
+The webscraping module is designed to scrape the SplitMyFare website (\cite{splitmyfare}) for ticket pricing information, using the data provided in an Enquiry object (section\ref{custom-types}) passed from the dialogue flow engine (section\ref{dialogue-flow-design}). It requires a utility function to unpack the Enquiry object into a URL string. And a primary function to utilise Selenium (\cite{selenium}) to open a headless browser at the URL, scrape the listed ticket times and prices and pack the data into a list of Journey objects to be returned to the dialogue flow engine.
 
 \subsection{Delay Prediction} \label{delay-prediction-design}
 
