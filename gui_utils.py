@@ -11,6 +11,7 @@ from tkinter import Listbox
 
 APPEARANCE_MODE = "dark"
 COLOUR_THEME = "dark-blue"
+BASE_FONT = "Helvetica"
 PADX = 10
 PADY = 10
 
@@ -21,10 +22,6 @@ WINDOW_HEIGHT = 650
 APP_GEOMETRY = f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}"
 APP_NAME = "Tinker Trian Chatbot"
 
-## TABVIEW:
-
-TAB_NAMES = [ "Find Best Tickets", "Delay Information" ]
-
 ## FRAME:
 
 FRAME_FILL = "both"
@@ -32,7 +29,7 @@ FRAME_EXPAND = True
 
 ## HEADER:
 
-HEADER_FONT = ("Arial", 20)
+HEADER_FONT = (BASE_FONT, 20)
 HEADER_PADX = 10
 HEADER_PADY = 20
 
@@ -40,7 +37,7 @@ HEADER_PADY = 20
 
 CONVO_WIDTH  = 350
 CONVO_HEIGHT = 450
-MSG_FONT = ("Arial", 12)
+MSG_FONT = (BASE_FONT, 12)
 BOT_MSG_COLOR = "lightblue"
 USR_MSG_COLOR = "lightgreen"
 
@@ -52,7 +49,7 @@ USR_MSG_COLOR = "lightgreen"
 
 class Msg(CTkLabel):
     def __init__(self, anchor: str, **kwargs):
-        super().__init__(text_color="black", justify="left", corner_radius=PADX, **kwargs)
+        super().__init__(text_color="black", font=MSG_FONT, justify="left", corner_radius=PADX, **kwargs)
         self.pack(anchor=anchor, padx=PADX, pady=PADY)
 
 class UsrMsg(Msg):
@@ -95,7 +92,7 @@ class App(CTk):
         
         self.conversation = Conversation(master=self.frame)
         
-        self.entry = CTkEntry(master=self.frame, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
+        self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
         self.entry.bind("<Return>", self.send_user_msg)
         self.entry.pack(padx=PADX, pady=PADY)
         
