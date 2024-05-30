@@ -3,7 +3,6 @@ import re
 import json
 import pandas as pd
 import socket
-import time
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,14 +22,8 @@ SOMETHING_WRONG_XPATH        = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[
 SEARCH_AGAIN_XPATH           = "/html/body/div[1]/div[1]/div/div/div[2]/button"
 OUTBOUND_CONTAINER_DIV_XPATH = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
 
-def get_xpaths_to_scrape(i: int) -> tuple[str, str]:
-    container_div_xpath       = f"{OUTBOUND_CONTAINER_DIV_XPATH}/div[{i+2}]"
-    time_span_xpath           = f"{container_div_xpath}/div[1]/div[2]/div/span"
-    price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
-    return container_div_xpath, time_span_xpath, price_container_div_xpath
-
-
 driver = None
+
 
 def init_driver():
     global driver
@@ -43,6 +36,13 @@ def init_driver():
         
 def wait_xpath_ret(xpath, timeout=3):
     return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
+
+def get_xpaths_to_scrape(i: int) -> tuple[str, str]:
+    container_div_xpath       = f"{OUTBOUND_CONTAINER_DIV_XPATH}/div[{i+2}]"
+    time_span_xpath           = f"{container_div_xpath}/div[1]/div[2]/div/span"
+    price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
+    return container_div_xpath, time_span_xpath, price_container_div_xpath
+
 
 
 def get_search_url(enquiry: Enquiry) -> str:
@@ -107,9 +107,7 @@ def get_search_url(enquiry: Enquiry) -> str:
 def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
     ## create driver, navigate to url deciphered from enquiry
-
     init_driver()
-    
     url = get_search_url(enquiry)
     driver.get(url)
 
@@ -145,19 +143,11 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         price_str = re.search(r"£(\d+\.\d{2})", price_container_div.get_attribute("innerHTML")).group(1)
 
         ## add price and journey to list
-        price_journey_tuplist.append(
-            (
-                price_str,
-                Journey (
-                    start_alpha3 = enquiry.start_alpha3,
-                    end_alpha3 = enquiry.end_alpha3,
-                    journey_type = enquiry.journey_type,
-                    out_depart_time = depart_time_str,
-                    out_arrive_time = arrive_time_str,
-                )
-            )
-        )
-
+        price_journey_tuplist.append(( price_str, Journey( start_alpha3 = enquiry.start_alpha3,
+                                                           end_alpha3 = enquiry.end_alpha3,
+                                                           journey_type = enquiry.journey_type,
+                                                           out_depart_time = depart_time_str,
+                                                           out_arrive_time = arrive_time_str,  ) ))
         i+=1
     i-=1
 
