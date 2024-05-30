@@ -13,11 +13,11 @@ valid_out_date      = tomorrow.strftime("%Y-%m-%d")
 valid_ret_time      = "20:00"
 valid_ret_date      = (tomorrow + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
+
 ## NOTE: bank holidays and train strikes may affect the validity of these tests
 
 valid_enquiry_tuplist_desc_obj_url = [
-    (
-        "NRW to LST, single, out-depart after mid-day tomorrow, 1 adult",
+    (  "NRW to LST, single, out-depart after mid-day tomorrow, 1 adult",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -30,8 +30,7 @@ valid_enquiry_tuplist_desc_obj_url = [
         ),
         f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}"
     ),
-    (
-        "NRW to LST, single, out-arrive before mid-day tomorrow, 1 adult, 1 child",
+    (   "NRW to LST, single, out-arrive before mid-day tomorrow, 1 adult, 1 child",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -44,8 +43,7 @@ valid_enquiry_tuplist_desc_obj_url = [
         ),
         f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=1&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1"
     ),
-    (
-        "NRW to LST, return, out-depart after mid-day tomorrow, ret-depart after 8pm the day after tomorrow, 1 adult",
+    (   "NRW to LST, return, out-depart after mid-day tomorrow, ret-depart after 8pm the day after tomorrow, 1 adult",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -61,8 +59,7 @@ valid_enquiry_tuplist_desc_obj_url = [
         ),
         f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}"
     ),
-    (
-        "NRW to LST, return, out-arrive before mid-day tomorrow, ret-depart after 8pm the day after tomorrow, 1 adult",
+    (   "NRW to LST, return, out-arrive before mid-day tomorrow, ret-depart after 8pm the day after tomorrow, 1 adult",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -78,8 +75,7 @@ valid_enquiry_tuplist_desc_obj_url = [
         ),
         f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&departureBefore=1&returnDate={valid_ret_date}T{valid_ret_time}"
     ),
-    (
-        "NRW to LST, return, out-depart after mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
+    (   "NRW to LST, return, out-depart after mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -95,8 +91,7 @@ valid_enquiry_tuplist_desc_obj_url = [
         ),
         f"https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate={valid_out_date}T{valid_out_time}&returnDate={valid_ret_date}T{valid_ret_time}&returnBefore=1"
     ),
-    (
-        "NRW to LST, return, out-arrive before mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
+    (   "NRW to LST, return, out-arrive before mid-day tomorrow, ret-arrive before 8pm the day after tomorrow, 1 adult",
         Enquiry(
             start_alpha3        = valid_start_alpha3,
             end_alpha3          = valid_end_alpha3,
@@ -133,17 +128,17 @@ def test_splitmyfare_get_search_url():
         print()
 
 def test_splitmyfare_get_journeys():
-    # url = "https://book.splitmyfare.co.uk/search?from=7073090&to=7069650&adults=1&children=0&departureDate=2024-05-11T12:00"
-    # journeys = splitmyfare.OLD_get_journeys(url)
-
     print()
     print("====================================TEST-SPLIT-MY-FARE-GET-JOURNEYS==============================")
     print()
     for description, enquiry, _ in valid_enquiry_tuplist_desc_obj_url:
         print(f"| DESCRIPTION  | {description}")
         passed = True
+        priced_journeys = None
         try:
-            journeys = splitmyfare.get_journeys(enquiry)
+            priced_journeys = splitmyfare.get_journeys(enquiry)
+            for p, j in priced_journeys:
+                print(f"| {j.out_depart_time}-{j.out_arrive_time} -> {j.ret_depart_time}-{j.ret_arrive_time} == {p}")
         except Exception as e:
             print(e)
             passed = False
