@@ -48,6 +48,8 @@ def xpaths_to_scrape(bound_container_div_xpath: str, i: int) -> tuple[str, str]:
 
 get_price_str = lambda div: re.search(r"£(\d+\.\d{2})", div.get_attribute("innerHTML")).group(1)
 
+get_time_strs = lambda time_span: (time_span.text[:5], time_span.text[-5:])
+
 
 def get_search_url(enquiry: Enquiry) -> str:
 
@@ -140,8 +142,7 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
         ## scrape outbound depature and arrival times, init inbound times
         time_span = wait_xpath_ret(time_span_xpath)
-        out_depart_time_str = time_span.text[:5]
-        out_arrive_time_str = time_span.text[-5:]
+        out_depart_time_str, out_arrive_time_str = get_time_strs(time_span)
         ret_depart_time_str = None
         ret_arrive_time_str = None
         
@@ -161,14 +162,13 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
                 _, time_span_xpath, price_container_div_xpath \
                   = xpaths_to_scrape(INBOUND_CONTAINER_DIV_XPATH, j)
                 
-                ## if the price matches the outbound price...
+                ## if the price matches the outbound price, scrape and add return times to journey object
                 price_container_div = opt_div.find_element(By.XPATH, price_container_div_xpath)
                 if get_price_str(price_container_div) == price_str:
                     time_span = opt_div.find_element(By.XPATH, time_span_xpath)
 
                     ## scrape return times and update journey object
-                    ret_depart_time_str = time_span.text[:5]
-                    ret_arrive_time_str = time_span.text[-5:]
+                    ret_depart_time_str, ret_arrive_time_str = get_time_strs(time_span)
 
         ## create and append journey object
         journeys.append(Journey( start_alpha3 = enquiry.start_alpha3,
@@ -192,11 +192,3 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     ## return zipped prices and journeys
     return list(zip(price_strings, journeys))
 
-
-"""
-1clickget:  /html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]/div[2]/div[2]/div[1]
-1lebigdiv:  /html/body/div[1]/div[1]/div/div[2]/div/div[2]/div[3]
-            
-2clickget:  /html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]/div[3]/div[2]/div[1]
-2lebigdiv:  /html/body/div[1]/div[1]/div/div[2]/div/div[2]/div[3]
-"""
