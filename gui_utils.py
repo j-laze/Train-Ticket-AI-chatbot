@@ -75,50 +75,78 @@ class Conversation(CTkScrollableFrame):
         UsrMsg(master=self, text=text) if sent_by=="usr" else BotMsg(master=self, text=text)
 
 
-class Tab(CTkFrame):
-    def __init__(self, master: CTkBaseClass, title: str, **kwargs):
-        super().__init__(master=master, **kwargs)
-        
-        self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
-        
-        self.title = CTkLabel(master=self, text=title, font=TITLE_FONT)
-        self.title.pack(pady=PADY, padx=PADX)
-
-        self.conversation = Conversation(master=self)
-        
-        self.entry = CTkEntry(master=self, placeholder_text="...")
-        self.entry.bind("<Return>", self.send_msg)
-        self.entry.pack(padx=PADX, pady=PADY)
-        
-    def send_msg(self, event):
-        self.conversation.add("usr", self.entry.get())
-        self.entry.delete(0, "end")
-
-
-class TabView(CTkTabview):
-    def __init__(self, master: CTkBaseClass, **kwargs):
-        super().__init__(master=master, **kwargs)
-        
-        self.pack(padx=PADX, pady=PADY)
-        
-        self.search_tab = self.add(TAB_NAMES[0])
-        self.delay_tab = self.add(TAB_NAMES[1])
+# class Content(CTkFrame):
+#     def __init__(self, master: CTkBaseClass, title: str, **kwargs):
+#         super().__init__(master=master, **kwargs)
+#         
+#         self.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
+#         
+#         self.title = CTkLabel(master=self, text=title, font=TITLE_FONT)
+#         self.title.pack(pady=PADY, padx=PADX)
+# 
+#         self.conversation = Conversation(master=self)
+#         
+#         self.entry = CTkEntry(master=self, placeholder_text="...")
+#         self.entry.bind("<Return>", self.send_msg)
+#         self.entry.pack(padx=PADX, pady=PADY)
+#         
+#     def send_msg(self, event):
+#         self.conversation.add("usr", self.entry.get())
+#         self.entry.delete(0, "end")
 
 
-class Gui(CTk):
+# class App(CTk):
+#     def __init__(self):
+#         super().__init__()
+#         
+#         set_appearance_mode(APPEARANCE_MODE)
+#         set_default_color_theme(COLOUR_THEME)
+# 
+#         self.geometry(APP_GEOMETRY)
+#         self.title(APP_NAME)
+# 
+#         self.gui = Content(master=self, title="Search for Tickets")
+#         
+#         self.gui.conversation.add("bot", "Hello! How can I help you today?")
+#         self.gui.conversation.add("usr", "You can't help me!")
+
+
+class App(CTk):
     def __init__(self):
         super().__init__()
         
+        self.messages: list[(str, str)] = []
+
         set_appearance_mode(APPEARANCE_MODE)
         set_default_color_theme(COLOUR_THEME)
 
         self.geometry(APP_GEOMETRY)
         self.title(APP_NAME)
         
-        self.tabview = TabView(master=self)
-        self.search_gui = Tab(master=self.tabview.search_tab, title="Search for Tickets")
-        self.delay_gui = Tab(master=self.tabview.delay_tab, title="Delay Tickets")
+        self.frame = CTkFrame(master=self)
+        self.frame.pack(fill=FRAME_FILL, expand=FRAME_EXPAND)
+
+        self.header = CTkLabel(master=self.frame, text="Search for Tickets", font=TITLE_FONT)
+        self.header.pack(pady=PADY, padx=PADX)
         
-        self.search_gui.conversation.add("bot", "Hello! How can I help you today?")
-        self.search_gui.conversation.add("usr", "You can't help me!")
+        self.conversation = Conversation(master=self.frame)
         
+        self.entry = CTkEntry(master=self.frame, placeholder_text="...")
+        self.entry.bind("<Return>", self.send_usr_msg)
+        self.entry.pack(padx=PADX, pady=PADY)
+        
+    def waiting_user_in(self):
+        return self.messages[-1][0] == "bot"
+    
+    def waiting_bot_out(self):
+        return not self.waiting_user_in()
+        
+    def send_usr_msg(self, _):
+        if self.waiting_user_in:
+            self.messages.append(("usr", self.entry.get()))
+            self.conversation.add("usr", self.entry.get())
+            self.entry.delete(0, "end")
+            
+    def send_bot_msg(self, msg):
+        self.messages.append(("bot", msg))
+        self.conversation.add("bot", msg)
