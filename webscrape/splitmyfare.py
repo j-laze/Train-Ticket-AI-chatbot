@@ -17,6 +17,7 @@ from utils import Enquiry, Journey
 
 
 STATION_CODE_JS_URL = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chunk.js"
+BASE_LISTING_URL    = "https://book.splitmyfare.co.uk/search"
 
 SOMETHING_WRONG_XPATH        = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
 SEARCH_AGAIN_XPATH           = "/html/body/div[1]/div[1]/div/div/div[2]/button"
@@ -51,11 +52,10 @@ get_price_str = lambda div: re.search(r"£(\d+\.\d{2})", div.get_attribute("inne
 get_time_strs = lambda time_span: (time_span.text[:5], time_span.text[-5:])
 
 
-def get_search_url(enquiry: Enquiry) -> str:
+def get_search_url(enq: Enquiry) -> str:
 
     ## get the raw text from the link
-    station_code_js_url = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chunk.js"
-    station_code_js = requests.get(station_code_js_url)
+    station_code_js = requests.get(STATION_CODE_JS_URL)
 
     ## verify the station_js request was successful
     if station_code_js.status_code != 200:
@@ -82,41 +82,39 @@ def get_search_url(enquiry: Enquiry) -> str:
             alpha3_to_uic[entry['crs']] = entry['uic']
 
     ## get the unique code for the start and end stations
-    from_uic = alpha3_to_uic[enquiry.start_alpha3]
-    to_uic = alpha3_to_uic[enquiry.end_alpha3]
+    from_uic = alpha3_to_uic[enq.start_alpha3]
+    to_uic = alpha3_to_uic[enq.end_alpha3]
 
     ## verify the given stations are actually in the JSON
     if from_uic is None:
-        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enquiry.start_alpha3}")
+        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enq.start_alpha3}")
     if to_uic is None:
-        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enquiry.end_alpha3}")
+        raise Exception(f"Unable to create splitmyfare search url, splitmyfare does not have station code {enq.end_alpha3}")
     
     ## populate url with universally required ticket information
-    url = "https://book.splitmyfare.co.uk/search"                   ## base url
-    url += f"?from={from_uic}&to={to_uic}"                          ## add the start and end stations
-    url += f"&adults={enquiry.adults}&children={enquiry.children}"  ## add the number of adults and children
-    url += f"&departureDate={enquiry.out_date}T{enquiry.out_time}"  ## add the departure date and time
+    url = BASE_LISTING_URL                                  ## base url
+    url += f"?from={from_uic}&to={to_uic}"                  ## add the start and end stations
+    url += f"&adults={enq.adults}&children={enq.children}"  ## add the number of adults and children
+    url += f"&departureDate={enq.out_date}T{enq.out_time}"  ## add the departure date and time
 
     ## populate url with optional ticket information
     ## TODO: if specified, apply railcard information to url here
-    if enquiry.out_time_condition == TimeCondition.ARRIVE_BEFORE:       ## if out time condition is on arrival, add to url
+    if enq.out_time_condition == TimeCondition.ARRIVE_BEFORE:       ## if out time condition is on arrival, add to url
         url += "&departureBefore=1"
-    if enquiry.journey_type == JourneyType.RETURN:                      ## if return journey, add return date and time to url
-        url += f"&returnDate={enquiry.ret_date}T{enquiry.ret_time}"
-        if enquiry.ret_time_condition == TimeCondition.ARRIVE_BEFORE:   ## if return time condition is on arrival, add to url
+    if enq.journey_type == JourneyType.RETURN:                      ## if return journey, add return date and time to url
+        url += f"&returnDate={enq.ret_date}T{enq.ret_time}"
+        if enq.ret_time_condition == TimeCondition.ARRIVE_BEFORE:   ## if return time condition is on arrival, add to url
             url += "&returnBefore=1"
 
     return url
 
 
 
-def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
+def get_journeys(enq: Enquiry) -> list[tuple[str, Journey]]:
 
     ## initialise the driver, get and open the search url
     init_driver()
-    url = get_search_url(enquiry)
-    print(url)
-    driver.get(url)
+    driver.get(get_search_url(enq))
 
     ## you must be a bot... click the button to prove you're not!
     button = wait_xpath_ret(SOMETHING_WRONG_XPATH, 5)
@@ -142,33 +140,32 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         except: break
 
         ## create journey object
-        jrny = Journey( start_alpha3 = enquiry.start_alpha3,
-                        end_alpha3   = enquiry.end_alpha3,
-                        journey_type = enquiry.journey_type )
+        jrny = Journey( start_alpha3 = enq.start_alpha3,
+                        end_alpha3   = enq.end_alpha3,
+                        journey_type = enq.journey_type )
 
         ## scrape outbound depature and arrival times, init inbound times
-        time_span = wait_xpath_ret(time_span_xpath)
-        jrny.out_depart_time, jrny.out_arrive_time = get_time_strs(time_span)
+        jrny.out_depart_time, jrny.out_arrive_time = get_time_strs(wait_xpath_ret(time_span_xpath))
         
         ## scrape fixed ticket price
-        jrny.price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
-        price_strings.append(jrny.price_str)
-        price_floats.append(float(jrny.price_str))
+        price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
+        price_strings.append(price_str)
+        price_floats.append(float(price_str))
         
         ## get return times
-        if enquiry.journey_type == JourneyType.RETURN:
+        if enq.journey_type == JourneyType.RETURN:
             driver.execute_script("arguments[0].scrollIntoView();", container_div)
             container_div.click()
             return_option_divs = driver.find_elements(By.XPATH, INBOUND_CONTAINER_DIV_XPATH+"/div")
             
             ## for each option
             for j, opt_div in enumerate(return_option_divs):
-                _, time_span_xpath, price_container_div_xpath \
+                _,time_span_xpath, price_container_div_xpath \
                   = xpaths_to_scrape(INBOUND_CONTAINER_DIV_XPATH, j)
                 
                 ## if the price matches the outbound price, scrape and add return times to journey object
                 price_container_div = opt_div.find_element(By.XPATH, price_container_div_xpath)
-                if get_price_str(price_container_div) == jrny.price_str:
+                if get_price_str(price_container_div) == price_str:
                     time_span = opt_div.find_element(By.XPATH, time_span_xpath)
 
                     ## scrape return times and update journey object
