@@ -121,7 +121,6 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         
         container_div_xpath, time_span_xpath, price_container_div_xpath = get_xpaths_to_scrape(i)
 
-        print()
         ## break if no more journeys found
         try: WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
         except: break
@@ -152,7 +151,7 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
         )
 
         i+=1
-
+    i-=1
 
     if not price_journey_tuplist:
         print("No journeys found")
@@ -174,4 +173,4 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     for num, string in enumerate(print_strings):
         print(f"{num+1} -> {string}")
 
-    return price_journey_tuplist[:i]
+    return price_journey_tuplist
