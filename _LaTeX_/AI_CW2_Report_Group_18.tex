@@ -263,10 +263,12 @@ Selenium allows us to scrape dynamically generated websites (i.e. SplitMyFare (\
 
 The following outlines and depicts the design of our system architecture and how key components interface with each-other.
 
+You'll notice, seeing that Python's objects don't have public/private/protected restrictions on attributes and methods, such restrictions are not denoted in any subsequent UML.
+
 
 \subsection{Custom Types} \label{custom-types}
 
-As powerful as Python's (\cite{python}) dynamic typing is, it can be a double edged sword. Especially when you consider the number of parameters components in our system have to pass between each other. As such, instead of passing a series of parameters and returning tuples (that are uneditable unless unpacked), we've defined a series of custom types to keep our codebase clean and maintainable. Their attributes and relations are as depicted in the following UML. You'll notice, seeing that Python's objects don't have public/private/protected restrictions on attributes and methods, such restrictions are not denoted.
+As powerful as Python's (\cite{python}) dynamic typing is, it can be a double edged sword. Especially when you consider the number of parameters components in our system have to pass between each other. As such, instead of passing a series of parameters and returning tuples (that are uneditable unless unpacked), we've defined a series of custom types to keep our codebase clean and maintainable. Their attributes and relations are as depicted in the following UML.
 
 \begin{figure}[h]
     \centering
@@ -278,6 +280,7 @@ As powerful as Python's (\cite{python}) dynamic typing is, it can be a double ed
 
 \subsection{Natural Language Processing (NLP)} \label{nlp-design}
 
+
 \subsubsection{Custom Named Entity Ruler (NER)} \label{named-entity-ruler-design}
 
 In addition to SpaCy's (\cite{spacy}) pre trained pipeline, we've injected our custom NER, into SpaCy's CNN/CPU pipeline, before it's default one, so our custom component can derive the tokens it needs, without interference. Our custom NER primarily involves a pattern set, to match station alpha3 codes to their names in natural language.
@@ -287,7 +290,10 @@ Using SpaCy's
 
 \subsubsection{Dialogue Flow Engine} \label{dialogue-flow-design}
 
-We've implemented a state machine, to control the flow of conversation, dependant on it's current state compared to the data derived from tokenisation.
+The purpose of the dialogue flow engine, is to control the flow of conversation between the user and the chatbot, whilst interfacing with the NPL to derive consistently formatted data.
+
+We've implemented it a state machine, dependant on it's current state compared to the data derived with the NPL. It has a default starting state, questioning the user to retrieve as much information as viably possible from the first prompt, after which, consequent states question the user to provide information for the remaining parameters, until the sufficient data is acquired to reach a completion state, from which point, it passes a curated Enquiry object (section\ref{custom-types}) over to the webscraping module.
+
 
 
 \subsection{Webscraping} \label{webscraping-design}
