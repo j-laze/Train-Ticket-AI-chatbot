@@ -21,6 +21,7 @@ STATION_CODE_JS_URL = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chun
 SOMETHING_WRONG_XPATH        = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
 SEARCH_AGAIN_XPATH           = "/html/body/div[1]/div[1]/div/div/div[2]/button"
 OUTBOUND_CONTAINER_DIV_XPATH = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
+INBOUND_CONTAINER_DIV_XPATH  = "/html/body/div[1]/div[1]/div/div[2]/div/div[2]/div[3]"
 
 driver = None
 
@@ -108,7 +109,9 @@ def get_search_url(enquiry: Enquiry) -> str:
 def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
     init_driver()
-    driver.get(get_search_url(enquiry))
+    url = get_search_url(enquiry)
+    print(url)
+    driver.get(url)
 
     ## you must be a bot... click the button to prove you're not!
     button = wait_xpath_ret(SOMETHING_WRONG_XPATH, 5)
@@ -125,33 +128,58 @@ def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
     journeys = []
     while True:
         
+        ## get outbound journey data xpaths
         container_div_xpath, time_span_xpath, price_container_div_xpath = get_xpaths_to_scrape(i)
 
-        try: wait_xpath_ret(container_div_xpath)    ## break if no more journeys found
+        ## exit loop if no more journeys found
+        try: container_div = wait_xpath_ret(container_div_xpath)
         except: break
 
-        time_span = wait_xpath_ret(time_span_xpath) ## first and last 5 characters are dept and arrival times
-        depart_time_str = time_span.text[:5]
-        arrive_time_str = time_span.text[-5:]
-
+        ## scrape outbound depature and arrival times, init inbound times
+        time_span = wait_xpath_ret(time_span_xpath)
+        out_depart_time_str = time_span.text[:5]
+        out_arrive_time_str = time_span.text[-5:]
+        ret_depart_time_str = None
+        ret_arrive_time_str = None
+        
+        ## scrape fixed ticket price
         price_str = get_price_str(wait_xpath_ret(price_container_div_xpath))
         price_strings.append(price_str)
         price_floats.append(float(price_str))
+        
+        ## get return times
+        if enquiry.journey_type == JourneyType.RETURN:
+            driver.execute_script("arguments[0].scrollIntoView();", container_div)
+            container_div.click()
 
+        ## create and append journey object
         journeys.append(Journey( start_alpha3 = enquiry.start_alpha3,
                                  end_alpha3 = enquiry.end_alpha3,
                                  journey_type = enquiry.journey_type,
-                                 out_depart_time = depart_time_str,
-                                 out_arrive_time = arrive_time_str, ))
+                                 out_depart_time = out_depart_time_str,
+                                 out_arrive_time = out_arrive_time_str, 
+                                 ret_depart_time = ret_depart_time_str,
+                                 ret_arrive_time = ret_arrive_time_str ))
         i+=1
 
-    if not price_strings:
+    ## return empty list if no journeys found
+    if len(price_strings) == 0:
         print("No journeys found")
         return []
 
+    ## mark the cheapest journey
     price_strings[price_floats.index(min(price_floats))] += " <- Cheapest"
     price_strings = ["£"+s for s in price_strings]
+
+    
 
     return list(zip(price_strings, journeys))
 
 
+"""
+1clickget:  /html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]/div[2]/div[2]/div[1]
+1lebigdiv:  /html/body/div[1]/div[1]/div/div[2]/div/div[2]/div[3]
+            
+2clickget:  /html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]/div[3]/div[2]/div[1]
+2lebigdiv:  /html/body/div[1]/div[1]/div/div[2]/div/div[2]/div[3]
+"""
