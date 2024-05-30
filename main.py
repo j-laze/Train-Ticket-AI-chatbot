@@ -35,8 +35,18 @@ class App(CTk):
         self.entry.pack(padx=PADX, pady=PADY)
         
 
+        self.nlp = spacy.load('en_core_web_sm')
+        self.station_df = read_csv_to_df()
 
+        self.patterns = create_patterns(self.station_df)
+        create_entity_ruler(self.nlp, self.patterns)
 
+        self.engine = DialogueFlowEngine(self.nlp, self.station_df)
+        
+        self.run_gen = self.engine.run()
+        question = next(self.run_gen)
+
+        self.send_bot_msg(question)
          
         # self.send_bot_msg("INITIAL PROMPT")
         
@@ -47,9 +57,15 @@ class App(CTk):
         return not self.waiting_for_user()
         
     def send_user_msg(self, _):
+        
         if self.waiting_for_user():
-            self.messages.append(("usr", self.entry.get()))
-            self.conversation.add("usr", self.entry.get())
+            user_msg = self.entry.get()
+            self.messages.append(("usr", user_msg))
+            self.conversation.add("usr", user_msg)
+
+            next_question = self.run_gen.send(user_msg)
+            self.send_bot_msg(next_question)
+            
             self.entry.delete(0, "end")
             
     def send_bot_msg(self, msg):
@@ -70,24 +86,25 @@ def main():
         minutes = minutes % 60
         return f"{hours:02d}:{minutes:02d}"
     
-    
+    app = App()
+    app.mainloop()
 
-    nlp = spacy.load('en_core_web_sm')
-    station_df = read_csv_to_df()
-
-    patterns = create_patterns(station_df)
-    create_entity_ruler(nlp, patterns)
-
-    engine = DialogueFlowEngine(nlp, station_df)
-
-    run_generator = engine.run() 
-    question = next(run_generator)  
-    print(question)
-
-    user_response = "delay"  
-
-    next_question = run_generator.send(user_response)  
-    print(next_question)
+#     nlp = spacy.load('en_core_web_sm')
+#     station_df = read_csv_to_df()
+# 
+#     patterns = create_patterns(station_df)
+#     create_entity_ruler(nlp, patterns)
+# 
+#     engine = DialogueFlowEngine(nlp, station_df)
+# 
+#     run_generator = engine.run() 
+#     question = next(run_generator)  
+#     print(question)
+# 
+#     user_response = "delay"  
+# 
+#     next_question = run_generator.send(user_response)  
+#     print(next_question)
     
     
 
