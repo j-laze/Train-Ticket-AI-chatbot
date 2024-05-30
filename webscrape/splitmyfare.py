@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import pandas as pd
+import socket
 import time
 
 from selenium import webdriver
@@ -9,8 +10,25 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from utils import JourneyType, TimeCondition, Railcard
+from selenium.webdriver.chrome.service import Service
+
+from utils import JourneyType, TimeCondition
 from utils import Enquiry, Journey
+
+
+
+STATION_CODE_JS_URL = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chunk.js"
+
+SOMETHING_WRONG_XPATH        = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
+SEARCH_AGAIN_XPATH           = "/html/body/div[1]/div[1]/div/div/div[2]/button"
+OUTBOUND_CONTAINER_DIV_XPATH = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
+
+
+def get_xpaths_to_scrape(i: int) -> tuple[str, str]:
+    container_div_xpath       = f"{OUTBOUND_CONTAINER_DIV_XPATH}/div[{i+2}]"
+    time_span_xpath           = f"{container_div_xpath}/div[1]/div[2]/div/span"
+    price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
+    return container_div_xpath, time_span_xpath, price_container_div_xpath
 
 
 
@@ -73,69 +91,26 @@ def get_search_url(enquiry: Enquiry) -> str:
 
 
 
-def OLD_get_journeys(url):
-
-    something_wrong_xpath           = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
-    search_again_xpath              = "/html/body/div[1]/div[1]/div/div/div[2]/button"
-    outbound_container_div_xpath    = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
-
-    driver = webdriver.Chrome()
-
-    driver.get(url)
-
-    ## you must be a bot... click the button to prove you're not!
-    button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, something_wrong_xpath)))
-    button.click()
-
-    ## reapply the search, because you're not a bot!
-    button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, search_again_xpath)))
-    button.click()
-
-    ## outbound journeys
-    i = 0
-    while (True):
-        container_div_xpath = f"{outbound_container_div_xpath}/div[{i+2}]"
-        time_span_xpath = f"{container_div_xpath}/div[1]/div[2]/div/span"
-        price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
-
-        try:
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
-        except:
-            break
-
-        ## get departure and arrival times using substring of time span element text
-        # NOTE: first and last 5 characters of text are departure and arrival times respectively
-        time_span = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, time_span_xpath)))
-        depart_time_str = time_span.text[:5]
-        arrive_time_str = time_span.text[-5:]
-
-        ## get the price from the price container div using regex on the innerHTML of the price container div
-        # NOTE: uses innerHTML because the cheapest price has another div inside the price container div
-        price_container_div = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, price_container_div_xpath)))
-        price_str = re.search(r"£(\d+\.\d{2})", price_container_div.get_attribute("innerHTML")).group(1)
-
-        print(f"{depart_time_str}-{arrive_time_str}, £{price_str}")
-        i+=1
-
-
-def get_journeys(enquiry: Enquiry):
-
-    something_wrong_xpath           = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
-    search_again_xpath              = "/html/body/div[1]/div[1]/div/div/div[2]/button"
-    outbound_container_div_xpath    = "/html/body/div[1]/div[1]/div/div[2]/div/div[1]/div[3]"
-    # return_container_div_xpath      = "" ## TODO: add return container div xpath
+def get_journeys(enquiry: Enquiry) -> list[tuple[str, Journey]]:
 
     ## create driver, navigate to url deciphered from enquiry
-    driver = webdriver.Chrome()
+
+    if socket.gethostname() == "Gordon": ## because conda is a pain
+        service = Service(executable_path="C:\Program Files\chromedriver-win64\chromedriver.exe")
+        options = webdriver.ChromeOptions()
+        driver = webdriver.Chrome(service=service, options=options)
+    else:
+        driver = webdriver.Chrome()
+    
     url = get_search_url(enquiry)
     driver.get(url)
 
     ## you must be a bot... click the button to prove you're not!
-    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, something_wrong_xpath)))
+    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, SOMETHING_WRONG_XPATH)))
     button.click()
 
     ## reapply the search, because you're not a bot!
-    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, search_again_xpath)))
+    button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, SEARCH_AGAIN_XPATH)))
     button.click()
 
     price_journey_tuplist = []
@@ -143,10 +118,10 @@ def get_journeys(enquiry: Enquiry):
     ## outbound journeys
     i = 0
     while True:
-        container_div_xpath = f"{outbound_container_div_xpath}/div[{i+2}]"
-        time_span_xpath = f"{container_div_xpath}/div[1]/div[2]/div/span"
-        price_container_div_xpath = f"{container_div_xpath}/div[2]/div[1]"
+        
+        container_div_xpath, time_span_xpath, price_container_div_xpath = get_xpaths_to_scrape(i)
 
+        print()
         ## break if no more journeys found
         try: WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, container_div_xpath)))
         except: break
@@ -193,7 +168,7 @@ def get_journeys(enquiry: Enquiry):
         price_float = float(re.sub(r"[^0-9.]", "", price_str))
         if price_float < cheapest_float:
             cheapest_float = price_float
-            cheapest_string = f"Cheapest -> {j_str}"
+            cheapest_string = f"{j_str} <- Cheapest"
     print(url) 
     print(cheapest_string)
     for num, string in enumerate(print_strings):
