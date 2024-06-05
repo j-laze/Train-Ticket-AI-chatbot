@@ -53,7 +53,8 @@ class App(CTk):
 
         self.conversation = Conversation(master=self.frame)
 
-        self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH + 2 * PADX)
+        # self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH + 2 * PADX)
+        self.entry = CTkTextbox(master=self.frame, font=MSG_FONT, width=CONVO_WIDTH + 2 * PADX)
         self.entry.bind("<Return>", self.send_user_msg)
         self.entry.pack(padx=PADX, pady=PADY)
 
@@ -80,14 +81,15 @@ class App(CTk):
 
     def send_user_msg(self, _):
         if self.waiting_for_user():
-            user_msg = self.entry.get()
+            user_msg = self.entry.get("1.0", "end").strip()
             self.messages.append(("usr", user_msg))
             self.conversation.add("usr", user_msg)
 
             next_question = self.run_gen.send(user_msg)
             self.send_bot_msg(next_question)
 
-            self.entry.delete(0, "end")
+            self.entry.delete("0.0", "end-1c")
+            return "break"
 
     def send_bot_msg(self, msg):
         self.messages.append(("bot", msg))
