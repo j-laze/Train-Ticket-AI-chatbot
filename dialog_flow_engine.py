@@ -121,6 +121,7 @@ class DialogueFlowEngine:
         self.state = self.dialogue_flow[self.state]['next_state']
 
     def start_location_check(self):
+        print("check hit")
         return self.user_enquiry.start_alpha3 is not None
 
     def handle_end_location(self, doc):
@@ -323,12 +324,14 @@ class DialogueFlowEngine:
         return self.service is not None
 
     def run(self):
-        if self.state == 'ASKING_SERVICE':
-            yield from self.ask_question(
-                "Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
+
 
         while True:
-            if self.state == 'ASKING_PREDICTION_STATION':
+
+            if self.state == 'ASKING_SERVICE':
+                yield from self.ask_question(
+                    "Hi ! i am a bot which can help you find cheapest tickets or predict delay for a train journey! , please tell me if you would like to use the delay prediction service or our ticket service ? ")
+            elif self.state == 'ASKING_PREDICTION_STATION':
                 yield from self.ask_question("Please provide me the current station where you are located")
 
             elif self.state == 'ASKING_PREDICTION_DELAY':
