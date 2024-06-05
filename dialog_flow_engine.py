@@ -4,8 +4,9 @@ from nlp.nlp import recognise_station_directions, recognise_times, recognise_dat
     recognise_chosen_service, recognise_station_pred, time_to_minutes, minutes_to_time, yes_or_no
 import sys
 import datetime
+import pyperclip
 
-from webscrape.splitmyfare import get_journeys
+from webscrape.splitmyfare import get_journeys, get_search_url
 from utils import JourneyType, TimeCondition, Railcard
 from utils import Enquiry, Journey, DelayPrediction
 from utils import knn, le, scaler
@@ -245,41 +246,26 @@ class DialogueFlowEngine:
        #self.state = 'EXIT'
 
     def completion(self):
-            # self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
-            # print(self.user_enquiry.out_time)
-            # url = get_search_url(self.user_enquiry)
-            # print(url)
-            print(self.user_enquiry.out_date)
-            print(type( self.user_enquiry.out_date))
-            self.user_enquiry.out_date = dateparser.parse(self.user_enquiry.out_date).strftime("%Y-%m-%d")
-            print("completed enquiry: ", self.user_enquiry)
-            # ## TODO: post demo, uncomment above and remove below
-            print("completed enquiry: ", self.user_enquiry)
-            print()
-            print("FOLLOWING DEFAULTS FOR DEMO: ")
-            print("| journey_type = JourneyType:SINGLE")
-            print("| out_time_condition = TimeCondition.DEPART_AFTER")
-            print("| out_date = 2024-05-10")
-            # print("| children = 0")
-            print()
 
-            demo_enquiry = Enquiry(
-                start_alpha3=self.user_enquiry.start_alpha3,
-                end_alpha3=self.user_enquiry.end_alpha3,
-                journey_type=JourneyType.SINGLE,
-                out_time_condition=TimeCondition.DEPART_AFTER,
-                out_time=fmt_natlang_time(self.user_enquiry.out_time),
-                out_date="2024-06-10",
-                adults=self.user_enquiry.adults,
-                children=0 if self.user_enquiry.children is None else self.user_enquiry.children,
-            )
+            url = get_search_url(self.user_enquiry)
+            pyperclip.copy(url)
+
+            print(url)
+            print(self.user_enquiry)
+
+            priced_journeys = get_journeys(self.user_enquiry)
+
+            msg = "Ticket Results: \n"
+            for price_str, _ in priced_journeys:
+                msg += f"  {price_str}\n"
+            msg += "The link is copied to your clipboard"
+
+            self.state = 'ASKING_SERVICE'
+            self.user_enquiry = Enquiry()
+
+            yield msg
 
             priced_journeys = get_journeys(demo_enquiry)
-            print("priced_journeys: ", priced_journeys)
-            print()
-            self.user_enquiry = Enquiry()
-            self.state = 'ASKING_SERVICE'
-
 
     def handle_return_time_constraint(self, doc):
         print("return time constraint hit")
