@@ -89,6 +89,11 @@ class DialogueFlowEngine:
             'ASKING_PASSENGERS': {
                 'method': self.handle_passengers,
                 'check': self.passengers_check,
+                'next_state': 'CONFIRMING_TICKET_INFO'
+            },
+            'CONFIRMING_TICKET_INFO': {
+                'method': self.handle_confirming_ticket_info,
+                'check': self.confirm_ticket_info_check,
                 'next_state': 'COMPLETED'
             },
             'ASKING_RAILCARD': {
@@ -116,8 +121,21 @@ class DialogueFlowEngine:
         }
 
 
+    def handle_confirming_ticket_info(self, doc):
+        result = yes_or_no(doc)
+        if not result:
+            self.state = 'CONFIRMING_TICKET_INFO'
+        elif result == 'yes':
+            self.state = 'COMPLETED'
+        else:
+            self.user_enquiry = Enquiry()
+            self.state = 'ASKING_JOURNEY_DETAILS'
+
+    def confirm_ticket_info_check(self):
+        return None
+
+
     def handle_confirming_prediction(self, doc):
-        print("confirming prediction")
         result = yes_or_no(doc)
         if not result:
             self.state = 'CONFIRMING_PREDICTION'
@@ -233,12 +251,13 @@ class DialogueFlowEngine:
                 journey_type=JourneyType.SINGLE,
                 out_time_condition=TimeCondition.DEPART_AFTER,
                 out_time=fmt_natlang_time(self.user_enquiry.out_time),
-                out_date="2024-06   -10",
+                out_date="2024-06-10",
                 adults=self.user_enquiry.adults,
                 children=0 if self.user_enquiry.children is None else self.user_enquiry.children,
             )
 
             priced_journeys = get_journeys(demo_enquiry)
+            print("priced_journeys: ", priced_journeys)
 
     def handle_return_time_constraint(self, doc):
         if self.user_enquiry.journey_type == 'RETURN':
@@ -397,6 +416,9 @@ class DialogueFlowEngine:
 
             elif self.state == 'CONFIRMING_PREDICTION':
                 yield from self.ask_question("Did you enter the correct details? ")
+
+            elif self.state == 'CONFIRMING_TICKET_INFO':
+                yield from self.ask_question("Did you enter the correct details for your ticket? ")
 
             elif self.state == 'COMPLETED_PREDICTION':
                 yield from self.completion_prediction()
