@@ -10,6 +10,8 @@ from utils import JourneyType, TimeCondition, Railcard
 from utils import Enquiry, Journey, DelayPrediction
 from utils import knn, le, scaler
 from models.getPredictionKnn import make_prediction
+import dateparser
+
 
 class DialogueFlowEngine:
     def __init__(self, nlp, station_df):
@@ -102,10 +104,12 @@ class DialogueFlowEngine:
             },
             'ASKING_RETURN_DATE_TIME': {
                 'method': self.handle_return_date_time,
+                'check': self.ret_date_time_check,
                 'next_state': 'ASKING_RETURN_TIME_CONSTRAINT'
             },
             'ASKING_RETURN_TIME_CONSTRAINT': {
                 'method': self.handle_return_time_constraint,
+                'check': self.ret_time_constraint_check,
                 'next_state': 'ASKING_PASSENGERS'
             },
 
@@ -119,6 +123,14 @@ class DialogueFlowEngine:
             }
 
         }
+
+
+    def ret_date_time_check(self):
+        return self.user_enquiry.ret_date and self.user_enquiry.ret_time is not None
+
+    def ret_time_constraint_check(self):
+        return self.user_enquiry.ret_time_condition is not None
+
 
 
     def handle_confirming_ticket_info(self, doc):
@@ -150,11 +162,10 @@ class DialogueFlowEngine:
         print("confirming prediction check")
         return None
 
-
-
     def handle_journey_details(self, doc):
         recognise_station_directions(doc, self.user_enquiry)
-        recognise_times(doc, self.user_enquiry)
+        recognise_times(doc, self.user_enquiry, False)
+        recognise_dates(doc, self.user_enquiry, False)
         recognise_single_or_return(doc, self.user_enquiry)
         self.state = self.dialogue_flow[self.state]['next_state']
 
@@ -181,19 +192,22 @@ class DialogueFlowEngine:
         return self.user_enquiry.journey_type is not None
 
     def handle_out_date_time(self, doc):
-        recognise_dates(doc, self.user_enquiry)
-        recognise_times(doc, self.user_enquiry)
+        recognise_dates(doc, self.user_enquiry, False)
+        recognise_times(doc, self.user_enquiry, False)
         self.state = self.dialogue_flow[self.state]['next_state']
 
     def out_date_time_check(self):  # check
-        return self.user_enquiry.out_date or self.user_enquiry.out_time
+        return self.user_enquiry.out_date and self.user_enquiry.out_time is not None
 
     def handle_out_time_constraint(self, doc):
-        recognise_time_mode(doc, self.user_enquiry)
-        self.state = self.dialogue_flow[self.state]['next_state']
+        recognise_time_mode(doc, self.user_enquiry, False)
+        if self.user_enquiry.journey_type == JourneyType.RETURN:
+            self.state = 'ASKING_RETURN_DATE_TIME'
+        else:
+            self.state = self.dialogue_flow[self.state]['next_state']
 
     def out_time_constraint_check(self):
-        return self.user_enquiry.out_time_condition
+        return self.user_enquiry.out_time_condition is not None
 
     def handle_passengers(self, doc):
         for i in range(1, len(doc)):
@@ -223,6 +237,7 @@ class DialogueFlowEngine:
         print(rounded_prediction)
         self.prediction_enquiry.norwich_arrival_time = self.prediction_enquiry.norwich_planned_time + rounded_prediction
         message = f"Your train is expected to arrive at Norwich at {minutes_to_time(self.prediction_enquiry.norwich_arrival_time)}"
+        self.prediction_enquiry = DelayPrediction()
         self.state = 'ASKING_SERVICE'
         yield message
 
@@ -234,7 +249,10 @@ class DialogueFlowEngine:
             # print(self.user_enquiry.out_time)
             # url = get_search_url(self.user_enquiry)
             # print(url)
-
+            print(self.user_enquiry.out_date)
+            print(type( self.user_enquiry.out_date))
+            self.user_enquiry.out_date = dateparser.parse(self.user_enquiry.out_date).strftime("%Y-%m-%d")
+            print("completed enquiry: ", self.user_enquiry)
             # ## TODO: post demo, uncomment above and remove below
             print("completed enquiry: ", self.user_enquiry)
             print()
@@ -258,17 +276,20 @@ class DialogueFlowEngine:
 
             priced_journeys = get_journeys(demo_enquiry)
             print("priced_journeys: ", priced_journeys)
+            print()
+            self.user_enquiry = Enquiry()
+            self.state = 'ASKING_SERVICE'
+
 
     def handle_return_time_constraint(self, doc):
-        if self.user_enquiry.journey_type == 'RETURN':
-            self.state = 'ASKING_PASSENGERS'
-        elif self.user_enquiry.journey_type == 'RETURN':
-            self.state = 'ASKING_RETURN_DATE_TIME'
+        print("return time constraint hit")
+        recognise_time_mode(doc, self.user_enquiry, True)
         self.state = self.dialogue_flow[self.state]['next_state']
 
     def handle_return_date_time(self, doc):
-        recognise_dates(doc, self.user_enquiry)
-        recognise_times(doc, self.user_enquiry)
+        print("return hit date time")
+        recognise_dates(doc, self.user_enquiry, True)
+        recognise_times(doc, self.user_enquiry, True)
         print(f"Return Date: {self.user_enquiry.ret_date}, Return Time: {self.user_enquiry.ret_time}")
         if not self.user_enquiry.ret_date:
             self.state = 'ASKING_RETURN_DATE_TIME'
@@ -276,7 +297,6 @@ class DialogueFlowEngine:
             self.state = 'ASKING_RETURN_DATE_TIME'
         self.state = self.dialogue_flow[self.state]['next_state']
 
-        # TODO add a check to see if the station is in the station_df
 
     def handle_pred_station(self, doc):
         self.prediction_enquiry.station = recognise_station_pred(doc)
@@ -398,11 +418,11 @@ class DialogueFlowEngine:
                     f"Do you want to leave at {self.user_enquiry.out_time} or arrive by a certain time to your destination? ")
 
             elif self.state == 'ASKING_OUTGOING_DATE_TIME':
-                yield from self.ask_question("What time would you like to travel at ? ")
+                yield from self.ask_question("What date and time would you like to travel at ? ")
 
             elif self.state == 'ASKING_RETURN_TIME_CONSTRAINT':
                 yield from self.ask_question(
-                    "Do you want to depart at or arrive by a certain time for your return journey? ")
+                    f"Do you want to leave at {self.user_enquiry.ret_time} or arrive to your destination by {self.user_enquiry.ret_time} for your return journey? ")
 
             elif self.state == 'ASKING_RETURN_DATE_TIME':
                 yield from self.ask_question("What's your return date and time? ")

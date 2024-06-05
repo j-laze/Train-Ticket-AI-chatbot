@@ -1,3 +1,4 @@
+import dateparser
 import pandas as pd
 from itertools import combinations
 
@@ -112,51 +113,67 @@ def recognise_single_or_return(doc, user_enquiry):
                 user_enquiry.journey_type = JourneyType.RETURN
 
 
-def recognise_time_mode(doc, user_enquiry):
+def recognise_time_mode(doc, user_enquiry, is_return):
     arrive_before_phrases = ['arrive before', 'arrive by', 'arrive at', 'arriving before', 'arriving by', 'arriving at']
     leave_after_phrases = ['leave after', 'leave by', 'leave at', 'leaving after', 'leaving by', 'leaving at']
 
-    for i in range(len(doc) - 1):  # Iterate over the tokens in the document, excluding the last token
-        phrase = f"{doc[i].text.lower()} {doc[i + 1].text.lower()}"  # Form a phrase with the current token and the next token
+    for i in range(len(doc) - 1):
+        phrase = f"{doc[i].text.lower()} {doc[i + 1].text.lower()}"
 
         if phrase in arrive_before_phrases:
-            user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
+            if is_return:
+                user_enquiry.ret_time_condition = TimeCondition.ARRIVE_BEFORE
+            else:
+                user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
         elif phrase in leave_after_phrases:
-            user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
+            if is_return:
+                user_enquiry.ret_time_condition = TimeCondition.DEPART_AFTER
+            else:
+                user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
 
-    # Check the last token separately
     last_token = doc[-1].text.lower()
     if last_token in arrive_before_phrases:
-        user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
+        if is_return:
+            user_enquiry.ret_time_condition = TimeCondition.ARRIVE_BEFORE
+        else:
+            user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
     elif last_token in leave_after_phrases:
-        user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
+        if is_return:
+            user_enquiry.ret_time_condition = TimeCondition.DEPART_AFTER
+        else:
+            user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
 
 
-def recognise_times(doc,
-                    user_enquiry):  # TODO: maybe add a return condition, so i know if the time is for the return journey
+def recognise_times(doc, user_enquiry, is_return):
     arrive_before_phrases = ['arrive before', 'arrive by', 'arrive at', 'arriving before', 'arriving by', 'arriving at']
     leave_after_phrases = ['leave after', 'leave by', 'leave at', 'leaving after', 'leaving by', 'leaving at']
-
     for token in doc.ents:
         if token.label_ == 'TIME':
-            # Check the previous two tokens to see if they form a phrase
             if token.start > 1:
                 prev_phrase = doc[token.start - 2:token.start].text.lower()
                 if prev_phrase in arrive_before_phrases:
-                    user_enquiry.out_time_condition = 'arrive before'
+                    if is_return:
+                        user_enquiry.ret_time_condition = 'arrive before'
+                    else:
+                        user_enquiry.out_time_condition = 'arrive before'
                 elif prev_phrase in leave_after_phrases:
-                    user_enquiry.out_time_condition = 'leave after'
-            user_enquiry.out_time = token.text
+                    if is_return:
+                        user_enquiry.ret_time_condition = 'leave after'
+                    else:
+                        user_enquiry.out_time_condition = 'leave after'
+            if is_return:
+                user_enquiry.ret_time = token.text
+            else:
+                user_enquiry.out_time = token.text
 
 
-def recognise_dates(doc, user_enquiry):  # maybe add a return condition, so i know if the date is for the return journey
+def recognise_dates(doc, user_enquiry, is_return):
     for token in doc.ents:
         if token.label_ == 'DATE':
-            if user_enquiry.JourneyType == 'SINGLE':
-                user_enquiry.out_date = token.text
-            if user_enquiry.JourneyType == 'RETURN':
-                user_enquiry.ret_date = token.text
-
+            if is_return:
+                user_enquiry.ret_date = dateparser.parse(token.text).strftime("%Y-%m-%d")
+            else:
+                user_enquiry.out_date = dateparser.parse(token.text).strftime("%Y-%m-%d")
 
 ## NOTE: assumes if pm not specified, time is am/24hr
 ## TODO: use some regex to handle more cases and make this more robust
