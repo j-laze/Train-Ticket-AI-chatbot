@@ -16,7 +16,7 @@ from utils import Enquiry, Journey
 
 
 
-STATION_CODE_JS_URL = "https://book.splitmyfare.co.uk/static/js/59.ff0845d3.chunk.js"
+STATION_CODE_JS_URL = "https://book.splitmyfare.co.uk/static/js/59.ed0c6bee.chunk.js"
 BASE_LISTING_URL    = "https://book.splitmyfare.co.uk/search"
 
 SOMETHING_WRONG_XPATH        = "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/a/button"
