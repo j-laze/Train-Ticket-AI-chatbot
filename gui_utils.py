@@ -49,7 +49,7 @@ USR_MSG_COLOR = "lightgreen"
 
 class Msg(CTkLabel):
     def __init__(self, anchor: str, **kwargs):
-        super().__init__(text_color="black", font=MSG_FONT, justify="left", corner_radius=PADX, **kwargs)
+        super().__init__(text_color="black", font=MSG_FONT, justify="left", corner_radius=PADX, wraplength=400, padx=PADX, pady=PADY, **kwargs)
         self.pack(anchor=anchor, padx=PADX, pady=PADY)
 
 class UsrMsg(Msg):
@@ -70,47 +70,5 @@ class Conversation(CTkScrollableFrame):
         
     def add(self, sent_by: str, text: str):
         UsrMsg(master=self, text=text) if sent_by=="usr" else BotMsg(master=self, text=text)
-
-
-# class App(CTk):
-#     def __init__(self):
-#         super().__init__()
-#         
-#         self.messages: list[(str, str)] = [] ## [(sent_by, text),...]
-# 
-#         set_appearance_mode(APPEARANCE_MODE)
-#         set_default_color_theme(COLOUR_THEME)
-# 
-#         self.geometry(APP_GEOMETRY)
-#         self.title(APP_NAME)
-#         
-#         self.frame = CTkFrame(master=self)
-#         self.frame.pack(fill=FRAME_FILL, expand=FRAME_EXPAND, padx=PADX*3, pady=PADY*3)
-# 
-#         self.header = CTkLabel(master=self.frame, text=APP_NAME, font=HEADER_FONT)
-#         self.header.pack(pady=(2*PADY, PADY), padx=PADX)
-#         
-#         self.conversation = Conversation(master=self.frame)
-#         
-#         self.entry = CTkEntry(master=self.frame, font=MSG_FONT, placeholder_text="...", width=CONVO_WIDTH+2*PADX)
-#         self.entry.bind("<Return>", self.send_user_msg)
-#         self.entry.pack(padx=PADX, pady=PADY)
-# 
-#          
-#         self.send_bot_msg("INITIAL PROMPT")
-#         
-#     def waiting_for_user(self):
-#         return self.messages[-1][0] == "bot"
-#     
-#     def waiting_for_bot(self):
-#         return not self.waiting_for_user()
-#         
-#     def send_user_msg(self, _):
-#         if self.waiting_for_user():
-#             self.messages.append(("usr", self.entry.get()))
-#             self.conversation.add("usr", self.entry.get())
-#             self.entry.delete(0, "end")
-#             
-#     def send_bot_msg(self, msg):
-#         self.messages.append(("bot", msg))
-#         self.conversation.add("bot", msg)
+        self.update_idletasks()
+        self._parent_canvas.yview_moveto(1)
