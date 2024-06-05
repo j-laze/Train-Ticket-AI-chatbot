@@ -1,7 +1,7 @@
 from utils import Enquiry
 from nlp.nlp import recognise_station_directions, recognise_times, recognise_dates, recognise_station, \
     print_named_entities_debug, recognise_single_or_return, recognise_time_mode, print_time_tokens, fmt_natlang_time, \
-    recognise_chosen_service, recognise_station_pred, time_to_minutes, minutes_to_time
+    recognise_chosen_service, recognise_station_pred, time_to_minutes, minutes_to_time, yes_or_no
 import sys
 import datetime
 
@@ -44,6 +44,11 @@ class DialogueFlowEngine:
             'ASKING_PREDICTION_NORWICH_PLANNED_TIME': {
                 'method': self.handle_pred_norwich_planned_time,
                 'check': self.pred_norwich_planned_time_check,
+                'next_state': 'CONFIRMING_PREDICTION'
+            },
+            'CONFIRMING_PREDICTION': {
+                'method': self.handle_confirming_prediction,
+                'check': self.confirm_prediction_check,
                 'next_state': 'COMPLETED_PREDICTION'
             },
             'COMPLETED_PREDICTION': {
@@ -101,7 +106,7 @@ class DialogueFlowEngine:
 
             'COMPLETED': {
                 'method': self.completion,
-                'next_state': None
+                'next_state': 'COMPLETED'
             },
             'EXIT': {
                 'method': None,
@@ -109,6 +114,25 @@ class DialogueFlowEngine:
             }
 
         }
+
+
+    def handle_confirming_prediction(self, doc):
+        print("confirming prediction")
+        result = yes_or_no(doc)
+        if not result:
+            self.state = 'CONFIRMING_PREDICTION'
+        elif result == 'yes':
+            self.state = 'COMPLETED_PREDICTION'
+        else:
+            self.prediction_enquiry = DelayPrediction()
+            self.state = 'ASKING_PREDICTION_STATION'
+
+
+    def confirm_prediction_check(self):
+        print("confirming prediction check")
+        return None
+
+
 
     def handle_journey_details(self, doc):
         recognise_station_directions(doc, self.user_enquiry)
@@ -181,27 +205,20 @@ class DialogueFlowEngine:
         print(rounded_prediction)
         self.prediction_enquiry.norwich_arrival_time = self.prediction_enquiry.norwich_planned_time + rounded_prediction
         message = f"Your train is expected to arrive at Norwich at {minutes_to_time(self.prediction_enquiry.norwich_arrival_time)}"
-
+        self.state = 'ASKING_SERVICE'
         yield message
 
 
        #self.state = 'EXIT'
 
     def completion(self):
-        user_input = input("Thank you for providing your journey details, are they correct?")
-        print("completed enquiry: ", self.user_enquiry)
-        if user_input.lower() == 'no':
-            self.user_enquiry = Enquiry()
-            self.state = 'ASKING_JOURNEY_DETAILS'
-            self.state = self.dialogue_flow[self.state]['next_state']
-        elif user_input.lower() == 'yes':
             # self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
             # print(self.user_enquiry.out_time)
             # url = get_search_url(self.user_enquiry)
             # print(url)
 
             # ## TODO: post demo, uncomment above and remove below
-
+            print("completed enquiry: ", self.user_enquiry)
             print()
             print("FOLLOWING DEFAULTS FOR DEMO: ")
             print("| journey_type = JourneyType:SINGLE")
@@ -216,7 +233,7 @@ class DialogueFlowEngine:
                 journey_type=JourneyType.SINGLE,
                 out_time_condition=TimeCondition.DEPART_AFTER,
                 out_time=fmt_natlang_time(self.user_enquiry.out_time),
-                out_date="2024-06-10",
+                out_date="2024-06   -10",
                 adults=self.user_enquiry.adults,
                 children=0 if self.user_enquiry.children is None else self.user_enquiry.children,
             )
@@ -281,6 +298,7 @@ class DialogueFlowEngine:
             if token.label_ == 'TIME':
                 self.prediction_enquiry.norwich_planned_time = fmt_natlang_time(token.text)
                 if self.prediction_enquiry.norwich_planned_time:
+                    print("next state")
                     self.state = self.dialogue_flow[self.state]['next_state']
             else:
                 self.state = self.dialogue_flow[self.state]['ASKING_PREDICTION_NORWICH_PLANNED_TIME']
@@ -377,10 +395,11 @@ class DialogueFlowEngine:
             elif self.state == 'ASKING_RAILCARD':
                 yield from self.ask_question("Do you have a railcard? ")
 
+            elif self.state == 'CONFIRMING_PREDICTION':
+                yield from self.ask_question("Did you enter the correct details? ")
 
             elif self.state == 'COMPLETED_PREDICTION':
                 yield from self.completion_prediction()
-
 
             elif self.state == 'COMPLETED':
                 yield from self.completion()

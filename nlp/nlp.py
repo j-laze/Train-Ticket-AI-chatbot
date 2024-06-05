@@ -75,6 +75,15 @@ def recognise_chosen_service(doc):
     return None
 
 
+def yes_or_no(doc):
+    for token in doc:
+        if token.text.lower() == 'yes':
+            return 'yes'
+        elif token.text.lower() == 'no':
+            return 'no'
+    return None
+
+
 def recognise_station_directions(doc, user_enquiry):
     for token in doc:
         if token.text in ['to', 'from'] and token.i < len(doc) - 1:
