@@ -1,14 +1,41 @@
 import datetime
 from enum import Enum
+import pandas as pd
+import pickle
+
+
+def open_model():
+    with open('models/dumpedModels/knnModel.pkl', 'rb') as file:
+        knn_load = pickle.load(file)
+    with open('models/dumpedModels/labelEncoder.pkl', 'rb') as file:
+        le_load = pickle.load(file)
+    with open('models/dumpedModels/scaler.pkl', 'rb') as file:
+        scaler_load = pickle.load(file)
+    return knn_load, le_load, scaler_load
+
+
+knn, le, scaler = open_model()
+
+
+def read_csv_to_df():
+    column_names = ["name", "longname", "name_alias", "alpha3", "tiploc"]
+    df = pd.read_csv('data/stations.csv', names=column_names, skiprows=1)
+
+    return df
+
+
+station_df = read_csv_to_df()
 
 
 class JourneyType(Enum):
     SINGLE = 1
     RETURN = 2
 
+
 class TimeCondition(Enum):
     DEPART_AFTER = 1
     ARRIVE_BEFORE = 2
+
 
 class Railcard(Enum):
     AGE_16_17 = 1
@@ -26,18 +53,18 @@ class Enquiry:
 
     def __init__(
             self,
-            start_alpha3: str = None,                   ## 3 letter code for the start station
-            end_alpha3: str = None,                     ## 3 letter code for the end station
-            journey_type: JourneyType = None,           ## SINGLE or RETURN
-            out_time: str = None,                       ## the time of departure or arrival for the outward journey
-            ret_time: str = None,                       ## the time of departure or arrival for the return journey
-            out_date: str = None,                       ## ON_DEPART or ON_ARRIVE
-            ret_date: str = None,                       ## ON_DEPART or ON_ARRIVE
-            out_time_condition: TimeCondition = None,   ## date and time of departure for the outward journey
-            ret_time_condition: TimeCondition = None,   ## date and time of departure for the return journey
-            adults: int = None,                         ## number of adults
-            children: int = None,                       ## number of children
-            railcard: Railcard = None,                  ## the type of railcard
+            start_alpha3: str = None,  ## 3 letter code for the start station
+            end_alpha3: str = None,  ## 3 letter code for the end station
+            journey_type: JourneyType = None,  ## SINGLE or RETURN
+            out_time: str = None,  ## the time of departure or arrival for the outward journey
+            ret_time: str = None,  ## the time of departure or arrival for the return journey
+            out_date: str = None,  ## ON_DEPART or ON_ARRIVE
+            ret_date: str = None,  ## ON_DEPART or ON_ARRIVE
+            out_time_condition: TimeCondition = None,  ## date and time of departure for the outward journey
+            ret_time_condition: TimeCondition = None,  ## date and time of departure for the return journey
+            adults: int = None,  ## number of adults
+            children: int = None,  ## number of children
+            railcard: Railcard = None,  ## the type of railcard
     ):
         self.start_alpha3 = start_alpha3
         self.end_alpha3 = end_alpha3
@@ -51,55 +78,50 @@ class Enquiry:
         self.adults = adults
         self.children = children
         self.railcard = railcard
+
     def __str__(self):
         return f"Enquiry(start_alpha3={self.start_alpha3}, end_alpha3={self.end_alpha3}, journey_type={self.journey_type}, out_time={self.out_time}, ret_time={self.ret_time}, out_date={self.out_date}, ret_date={self.ret_date}, out_time_condition={self.out_time_condition}, ret_time_condition={self.ret_time_condition}, adults={self.adults}, children={self.children}, railcard={self.railcard})"
 
 
 class DelayPrediction:
-        def __init__(
-                self,
-                station: str = None,                       ## the station code
-                day_of_week: int = None,                   ## the day of the week
-                month: int = None,                         ## the month
-                actual_departure: int = None,              ## the actual departure time
-                departure_difference: int = None,          ## the difference between the actual and planned departure times
-                planned_departure: int = None,             ## the planned departure time
-                actual_arrival: int = None,                ## the actual arrival time
-                london_leave_time: int = None,             ## the time the train leaves london
-                london_planned_time: int = None,           ## the planned time the train leaves london
-                london_leave_difference: int = None,
-                norwich_planned_time: int = None,
-                norwich_arrival_time: int = None,
-                norwich_arrival_difference: int = None
-        ):
-            self.station = station
-            self.day_of_week = day_of_week
-            self.month = month
-            self.actual_departure = actual_departure
-            self.departure_difference = departure_difference
-            self.planned_departure = planned_departure
-            self.actual_arrival = actual_arrival
-            self.london_leave_time = london_leave_time
-            self.london_planned_time = london_planned_time
-            self.london_leave_difference = london_leave_difference
-            self.norwich_planned_time = norwich_planned_time
-            self.norwich_arrival_time = norwich_arrival_time
-            self.norwich_arrival_difference = norwich_arrival_difference
+    def __init__(
+            self,
+            station: str = None,  ## the station code
+            day_of_week: int = None,  ## the day of the week
+            month: int = None,  ## the month
+            actual_departure: int = None,  ## the actual departure time
+            departure_difference: int = None,  ## the difference between the actual and planned departure times
+            planned_departure: int = None,  ## the planned departure time
+            actual_arrival: int = None,  ## the actual arrival time
+            london_leave_time: int = None,  ## the time the train leaves london
+            london_planned_time: int = None,  ## the planned time the train leaves london
+            london_leave_difference: int = None,
+            norwich_planned_time: int = None,
+            norwich_arrival_time: int = None,
+            norwich_arrival_difference: int = None
+    ):
+        self.station = station
+        self.day_of_week = day_of_week
+        self.month = month
+        self.actual_departure = actual_departure
+        self.departure_difference = departure_difference
+        self.planned_departure = planned_departure
+        self.london_leave_time = london_leave_time
+        self.norwich_planned_time = norwich_planned_time
+        self.norwich_arrival_time = norwich_arrival_time
 
-        def __str__(self):
-            return f"DelayPrediction(station={self.station}, day_of_week={self.day_of_week}, month={self.month}, actual_departure={self.actual_departure}, departure_difference={self.departure_difference}, planned_departure={self.planned_departure}, actual_arrival={self.actual_arrival}, london_leave_time={self.london_leave_time}, london_planned_time={self.london_planned_time}, london_leave_difference={self.london_leave_difference}, norwich_planned_time={self.norwich_planned_time}, norwich_arrival_time={self.norwich_arrival_time}, norwich_arrival_difference={self.norwich_arrival_difference})"
 
 class Journey:
 
     def __init__(
             self,
-            start_alpha3: str = None,           ## 3 letter code for the start station
-            end_alpha3: str = None,             ## 3 letter code for the end station
-            journey_type: JourneyType = None,   ## SINGLE or RETURN
-            out_depart_time: datetime = None,   ## date and time of departure for the outward journey
-            out_arrive_time: datetime = None,   ## date and time of arrival for the outward journey
-            ret_depart_time: datetime = None,   ## date and time of departure for the return journey
-            ret_arrive_time: datetime = None,   ## date and time of arrival for the return journey
+            start_alpha3: str = None,  ## 3 letter code for the start station
+            end_alpha3: str = None,  ## 3 letter code for the end station
+            journey_type: JourneyType = None,  ## SINGLE or RETURN
+            out_depart_time: datetime = None,  ## date and time of departure for the outward journey
+            out_arrive_time: datetime = None,  ## date and time of arrival for the outward journey
+            ret_depart_time: datetime = None,  ## date and time of departure for the return journey
+            ret_arrive_time: datetime = None,  ## date and time of arrival for the return journey
     ):
         self.start_alpha3 = start_alpha3
         self.end_alpha3 = end_alpha3
