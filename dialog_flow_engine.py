@@ -260,12 +260,12 @@ class DialogueFlowEngine:
                 msg += f"  {price_str}\n"
             msg += "The link is copied to your clipboard"
 
-            self.state = 'ASKING_SERVICE'
-            self.user_enquiry = Enquiry()
 
             yield msg
 
-            priced_journeys = get_journeys(demo_enquiry)
+            self.state = 'ASKING_SERVICE'
+            self.user_enquiry = Enquiry()
+
 
     def handle_return_time_constraint(self, doc):
         print("return time constraint hit")

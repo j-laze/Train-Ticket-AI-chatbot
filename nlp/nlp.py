@@ -153,18 +153,18 @@ def recognise_times(doc, user_enquiry, is_return):
                 prev_phrase = doc[token.start - 2:token.start].text.lower()
                 if prev_phrase in arrive_before_phrases:
                     if is_return:
-                        user_enquiry.ret_time_condition = 'arrive before'
+                        user_enquiry.ret_time_condition = TimeCondition.ARRIVE_BEFORE
                     else:
-                        user_enquiry.out_time_condition = 'arrive before'
+                        user_enquiry.out_time_condition = TimeCondition.ARRIVE_BEFORE
                 elif prev_phrase in leave_after_phrases:
                     if is_return:
-                        user_enquiry.ret_time_condition = 'leave after'
+                        user_enquiry.ret_time_condition = TimeCondition.DEPART_AFTER
                     else:
-                        user_enquiry.out_time_condition = 'leave after'
+                        user_enquiry.out_time_condition = TimeCondition.DEPART_AFTER
             if is_return:
-                user_enquiry.ret_time = token.text
+                user_enquiry.ret_time = fmt_natlang_time(token.text)
             else:
-                user_enquiry.out_time = token.text
+                user_enquiry.out_time = fmt_natlang_time(token.text)
 
 
 def recognise_dates(doc, user_enquiry, is_return):
