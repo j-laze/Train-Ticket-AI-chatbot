@@ -23,7 +23,7 @@ class DialogueFlowEngine:
             'ASKING_SERVICE': {
                 'method': self.handle_asking_service,
                 'check': self.ask_service_check,
-                'next_state': 'ASKING_PREDICTION_STATION'
+                'next_state': 'ASKING_SERVICE'
             },
 
             'ASKING_PREDICTION_STATION': {
@@ -189,12 +189,12 @@ class DialogueFlowEngine:
 
     def completion(self):
         user_input = input("Thank you for providing your journey details, are they correct?")
+        print("completed enquiry: ", self.user_enquiry)
         if user_input.lower() == 'no':
             self.user_enquiry = Enquiry()
             self.state = 'ASKING_JOURNEY_DETAILS'
             self.state = self.dialogue_flow[self.state]['next_state']
         elif user_input.lower() == 'yes':
-            # print("completed enquiry: ", self.user_enquiry)
             # self.user_enquiry.out_time = fmt_natlang_time(self.user_enquiry.out_time)
             # print(self.user_enquiry.out_time)
             # url = get_search_url(self.user_enquiry)
@@ -216,7 +216,7 @@ class DialogueFlowEngine:
                 journey_type=JourneyType.SINGLE,
                 out_time_condition=TimeCondition.DEPART_AFTER,
                 out_time=fmt_natlang_time(self.user_enquiry.out_time),
-                out_date="2024-05-10",
+                out_date="2024-06-10",
                 adults=self.user_enquiry.adults,
                 children=0 if self.user_enquiry.children is None else self.user_enquiry.children,
             )
@@ -295,7 +295,7 @@ class DialogueFlowEngine:
         if recognise_chosen_service(doc) == 'ticket':
             self.state = 'ASKING_JOURNEY_DETAILS'
         elif recognise_chosen_service(doc) == 'delay':
-            self.state = self.dialogue_flow[self.state]['next_state']
+            self.state = 'ASKING_PREDICTION_STATION'
         else:
             self.state = 'ASKING_SERVICE'
 

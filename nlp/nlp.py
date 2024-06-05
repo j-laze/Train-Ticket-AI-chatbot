@@ -71,7 +71,7 @@ def recognise_chosen_service(doc):
         if token.text.lower() == 'delay':
             return 'delay'
         elif token.text.lower() == 'ticket':
-            return 'prediction'
+            return 'ticket'
     return None
 
 
